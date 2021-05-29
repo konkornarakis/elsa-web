@@ -74,11 +74,12 @@ app.get('/create', (req, res) => {
 })
 
 app.post('/create', (req, res) => {
+    console.log("parcelname: " + req.body.parcelname)
     orders.push({
         id: Date.now().toString(),
         name: req.body.parcelname
     })
-    res.render('/create_completed.ejs')
+    res.render('create_completed.ejs', { name: 'Name', parcelname: req.body.parcelname })
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
 })  
 
