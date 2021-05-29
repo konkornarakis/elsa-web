@@ -90,66 +90,10 @@
       </div>
     </header>
     <main class="container">
-        <form action="/create" method="POST">
-            <div class="mb-3">
-                <label for="parcelname" class="form-label">Όνομα παραγγελίας</label>
-                <input type="text" class="form-control" id="parcelname" aria-describedby="parcelnameHelp" required>
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
-
-            <div class="b-example-divider"></div>
-
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Διεύθυνση παραλαβής</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Διεύθυνση αποστολής</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
-  
-            <div class="b-example-divider"></div>
-              
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-              <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
-
-            <div class="b-example-divider"></div>
-            
-            <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Πλάτος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Ύψος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Μήκος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Βάρος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Εκτιμώμενη αξία</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Σύντομη περιγραφή πακέτου</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="exampleCheck1">
-              <label class="form-check-label" for="exampleCheck1">Check me out</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+        <div class="text-center">
+            <h1>Η δημιουργία παραγγελίας ολοκληρώθηκε <%= name %></h1>
+            <p>Όνομα παραγγελίας: <%= parcelname %> </p>
+        </div>
     </main>
   </body>
 </html>

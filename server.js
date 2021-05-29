@@ -21,6 +21,7 @@ initializePassport(
 );
 
 const users = [];
+const orders = [];
 
 app.use('/views', express.static(__dirname + "/views"));
 app.set('view-engine', 'ejs');
@@ -71,6 +72,15 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
 app.get('/create', (req, res) => {
     res.render('create.ejs')
 })
+
+app.post('/create', (req, res) => {
+    orders.push({
+        id: Date.now().toString(),
+        name: req.body.parcelname
+    })
+    res.render('/create_completed.ejs')
+    // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
+})  
 
 app.get('/home', (req, res) => {
     res.render('home.ejs')
