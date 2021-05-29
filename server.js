@@ -72,6 +72,10 @@ app.get('/create', (req, res) => {
     res.render('create.ejs')
 })
 
+app.get('/home', (req, res) => {
+    res.render('home.ejs')
+})
+
 app.delete('/logout', (req, res) => {
     req.logout()
     res.redirect('/login')
