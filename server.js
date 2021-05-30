@@ -10,18 +10,34 @@ const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
 const path = require('path');
-// const bootstrap = require('bootstrap')
-// const jquery = require('jquery')
-// const popperjs = require('@popperjs/core')
+
+// Database
+const config = require('./config')
+const mongoClient = require('mongodb').MongoClient
+const cors = require('cors')
+
+//that get us connected to the db and provide us with the collection
+mongoClient.connect(`mongodb://${config.dbhost}`, {
+    userNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(client => {
+    const db = client.db(config.dbName)
+    const collection = db.collection(config.dbCollection)
+    app.locals[config.dbCollection] = collection
+})
+
+
 const initializePassport = require('./passport-config');
+const { MongoClient } = require('mongodb');
 initializePassport(
     passport,
     email => users.find(user => user.email === email),
     id => users.find(user => user.id === id)
 );
 
-const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '1' }];
-const orders = [];
+const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '1', availability: [] }]
+const orders = []
+const availability = []
 
 app.use('/views', express.static(__dirname + "/views"));
 app.set('view-engine', 'ejs');
@@ -35,6 +51,13 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
+// middleware to make the collection easily available to all of our routes
+app.use(cors())
+app.use((req, res, next) => {
+    const collection = req.app.locals[config.dbCollection]
+    req.collection = collection
+    next()
+})
 
 app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', { name: req.user.name });
@@ -85,6 +108,26 @@ app.post('/create', checkAuthenticated, (req, res) => {
     res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname })
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
 })  
+
+app.get('/availability', checkAuthenticated, (req, res) => {
+    console.log(req.user.name)
+    let u = users.find(user => user.name === req.user.name)
+    console.log(u)
+    res.render('availability.ejs', { name: 'username' })
+})
+
+app.post('/availability', checkAuthenticated, (req, res) => {
+    console.log('POST request, availability')
+    console.log(req.body)
+    let u = users.find(user => user.name === req.user.name)
+    u.availability.push({
+        availabilityStart: req.body.availabilityStart,
+        availabilityEnd: req.body.availabilityEnd,  
+    })
+    console.log(u)
+    // constole.log(users.find(user => user.name === req.user.name))
+    res.render('availability.ejs', { users })
+})
 
 app.get('/history', checkAuthenticated, (req, res) => {
     res.render('history.ejs', {orders})

@@ -3,8 +3,6 @@ user
     user_name
     hashedpassword
 
-
-
 parcel
     parcel_id -- μοναδικό αναγνωριστικό παραγγελίας
     sender_id -- το user_id ενός user o οποίος είναι ο αποστολέας της παραγγελίας

@@ -66,6 +66,7 @@
             <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
             <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
             <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
+            <li><a href="/availability" class="nav-link px-2 link-dark">Availability</a></li>
             <li><a href="/history" class="nav-link px-2 link-dark">History</a></li>
             <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
           </ul>
@@ -91,16 +92,31 @@
     </header>
     <div class="text-center">
       <main class="form-signin">
-        <h1>Hi <%= name %></h1>
-        <form action="/availability" method="POST">
-            <label for="birthdaytime">Availability (date and time):</label>
-            <input type="datetime-local" id="birthdaytime" name="birthdaytime">
-            <input type="submit">
+        <h1>Hi</h1>
+        <form id="availabilityForm" action="/availability" method="POST">
+          <label for="datetime-availability-start">Start (date and time):</label>
+          <input type="datetime-local" id="datetime-availability-start" name="availabilityStart">
+          <label for="datetime-availability-end">End (date and time):</label>
+          <input type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
+          <input type="submit">
         </form>
-        <form action="/logout?_method=DELETE" method="POST">
-          <button class="w-20 btn btn-lg btn-primary" type="submit">Log out</button>
-        </form>
+        <h2>Availability summary</h2>
+        <% if (users.length) {
+          %><ul>
+            <% users.forEach((u) => {
+              %>
+                <li>available at: </li>
+              <%
+            }) %>
+          </ul><%
+        } %>
+      <form action="/logout?_method=DELETE" method="POST">
+        <button class="w-20 btn btn-lg btn-primary" type="submit">Log out</button>
+      </form>
       </main>
     </div>
+    <script>
+        
+    </script>
   </body>
 </html>
