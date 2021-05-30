@@ -94,7 +94,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
 
 app.get('/create', checkAuthenticated, (req, res) => {
     console.log(req.user.name)
-    res.render('create.ejs')
+    res.render('create.ejs', { name: req.user.name })
 })
 
 app.post('/create', checkAuthenticated, (req, res) => {
@@ -110,15 +110,20 @@ app.post('/create', checkAuthenticated, (req, res) => {
 })  
 
 app.get('/availability', checkAuthenticated, (req, res) => {
-    console.log(req.user.name)
     let u = users.find(user => user.name === req.user.name)
     console.log(u)
-    res.render('availability.ejs', { name: 'username' })
+
+    console.log('printing availability')
+    for (let i = 0; i < u.availability.length; i++) {
+        console.log(u.availability[i].availabilityStart)
+    }
+
+    res.render('availability.ejs', { name: req.user.name, u });
 })
 
 app.post('/availability', checkAuthenticated, (req, res) => {
-    console.log('POST request, availability')
-    console.log(req.body)
+    // console.log('POST request, availability')
+    // console.log(req.body)
     let u = users.find(user => user.name === req.user.name)
     u.availability.push({
         availabilityStart: req.body.availabilityStart,
@@ -126,7 +131,7 @@ app.post('/availability', checkAuthenticated, (req, res) => {
     })
     console.log(u)
     // constole.log(users.find(user => user.name === req.user.name))
-    res.render('availability.ejs', { users })
+    res.render('availability.ejs', { name: req.user.name, users });
 })
 
 app.get('/history', checkAuthenticated, (req, res) => {

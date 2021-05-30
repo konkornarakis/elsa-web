@@ -92,31 +92,25 @@
     </header>
     <div class="text-center">
       <main class="form-signin">
-        <h1>Hi</h1>
+        <h1>Hi <%= name %></h1>
+        
         <form id="availabilityForm" action="/availability" method="POST">
-          <label for="datetime-availability-start">Start (date and time):</label>
-          <input type="datetime-local" id="datetime-availability-start" name="availabilityStart">
-          <label for="datetime-availability-end">End (date and time):</label>
-          <input type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
-          <input type="submit">
+            <label for="datetime-availability-start">Start (date and time):</label>
+            <input type="datetime-local" id="datetime-availability-start" name="availabilityStart">
+            <label for="datetime-availability-end">End (date and time):</label>
+            <input type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
+            <input type="submit">
         </form>
-        <h2>Availability summary</h2>
-        <% if (users.length) {
-          %><ul>
-            <% users.forEach((u) => {
-              %>
-                <li>available at: </li>
-              <%
-            }) %>
-          </ul><%
-        } %>
-      <form action="/logout?_method=DELETE" method="POST">
-        <button class="w-20 btn btn-lg btn-primary" type="submit">Log out</button>
-      </form>
+        
+        <h1>Availability summary</h1>
+        <% for (let i = 0; i < u.availability.length; i++) { %>
+            <li> <%= u.availability[i].availabilityStart %>  </li> 
+        <% } %>
+
+        <form action="/logout?_method=DELETE" method="POST">
+          <button class="w-20 btn btn-lg btn-primary" type="submit">Log out</button>
+        </form>
       </main>
     </div>
-    <script>
-        
-    </script>
   </body>
 </html>
