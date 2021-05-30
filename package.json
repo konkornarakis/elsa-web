@@ -20,6 +20,7 @@
     "jquery": "^3.6.0",
     "method-override": "^3.0.0",
     "mongodb": "^3.6.9",
+    "mssql": "^7.1.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "tedious": "^11.0.8"

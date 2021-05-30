@@ -34,11 +34,43 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 
+// Database stuff
+var sql = require('mssql');
+
+var sqlConfig = {
+    user: 'elsa',
+    password: 'elsa',
+    server: `DESKTOP-SAHGON\\SAHGONMSSQL`,  
+    database: 'Elsa',
+    trustServerCertificate: true,
+};
+
+app.get('/s', (req, res) => {
+    (async function () {
+        try {
+            console.log("sql connecting......")
+            let pool = await sql.connect(sqlConfig)
+            let result = await pool.request()
+                .query('SELECT TOP (1000) [id], [name] FROM [Elsa].[dbo].[Test];')  // subject is my database table name
+      
+            console.log('sql results: ')
+            console.log(result) 
+        } catch (err) {
+            console.log(err);
+        }
+      })()
+})
+
+
+// end of database stuff
+
 app.get('/', checkAuthenticated, (req, res) => {
+    console.log('rendering index.ejs')
     res.render('index.ejs', { name: req.user.name });
 })
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
+    console.log('rendering login.ejs')
     res.render('login.ejs')
 })
 
@@ -49,6 +81,7 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 }))
 
 app.get('/register', checkNotAuthenticated, (req, res) => {
+    console.log('rendering register.ejs')
     res.render('register.ejs')
 })
 
@@ -61,25 +94,28 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         email: req.body.email,
         password: hashedPassword
       })
+      console.log('redirecting to login.ejs')
       res.redirect('/login')
     } catch {
-      res.redirect('/register')
+        console.log('rendering register.ejs')
+        res.redirect('/register')
     }
 })
 
 app.get('/create', checkAuthenticated, (req, res) => {
-    console.log(req.user.name)
+    console.log('rendering create.ejs')
     res.render('create.ejs', { name: req.user.name })
 })
 
 app.post('/create', checkAuthenticated, (req, res) => {
-    console.log("parcelname: " + req.body.parcelname + ", username: " + req.user.name)
+    // console.log("parcelname: " + req.body.parcelname + ", username: " + req.user.name)
     //console.log(u)
     orders.push({
         id: Date.now().toString(),
         name: req.body.parcelname
     })
 
+    console.log('rendering create_completed.ejs')
     res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname })
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
 })  
@@ -95,6 +131,7 @@ app.get('/availability', checkAuthenticated, (req, res) => {
         console.log(u.availability[i].availabilityStart)
     }
 
+    console.log('rendering availability.ejs')
     res.render('availability.ejs', { name: req.user.name, u, error: msg});
 })
 
@@ -126,25 +163,30 @@ app.post('/availability', checkAuthenticated, (req, res) => {
         })
     // console.log(u)
     // constole.log(users.find(user => user.name === req.user.name))
+    console.log('rendering availability.ejs')
     res.render('availability.ejs', { name: req.user.name, u, error: msg });
 })
 
 app.get('/history', checkAuthenticated, (req, res) => {
+    console.log('rendering history.ejs')
     res.render('history.ejs', {orders})
 })
 
 app.get('/home', (req, res) => {
+    console.log('rendering home.ejs')
     res.render('home.ejs')
 })
 
 app.delete('/logout', (req, res) => {
     req.logout()
+    console.log('redirecting to login.ejs')
     res.redirect('/login')
 })
 
 //always last
 app.get('*', (req, res) => {
     res.status(404)
+    console.log('rendering notfound.ejs')
     res.render('notfound.ejs')
 })
 
