@@ -111,27 +111,47 @@ app.post('/create', checkAuthenticated, (req, res) => {
 
 app.get('/availability', checkAuthenticated, (req, res) => {
     let u = users.find(user => user.name === req.user.name)
-    console.log(u)
+    // console.log(u)
 
-    console.log('printing availability')
+    let msg = null;
+
+    // console.log('printing availability')
     for (let i = 0; i < u.availability.length; i++) {
         console.log(u.availability[i].availabilityStart)
     }
 
-    res.render('availability.ejs', { name: req.user.name, u });
+    res.render('availability.ejs', { name: req.user.name, u, error: msg});
 })
 
 app.post('/availability', checkAuthenticated, (req, res) => {
     // console.log('POST request, availability')
     // console.log(req.body)
     let u = users.find(user => user.name === req.user.name)
-    u.availability.push({
-        availabilityStart: req.body.availabilityStart,
-        availabilityEnd: req.body.availabilityEnd,  
-    })
-    console.log(u)
+
+    let newStart = req.body.availabilityStart
+    let newEnd = req.body.availabilityEnd
+
+    let msg = 'Success. Availability added.'; 
+
+    for (let i = 0; i < u.availability.length; i++) {
+        let start = u.availability[i].availabilityStart 
+        let end = u.availability[i].availabilityEnd
+
+        if (newStart < end) {
+            console.log('newStart < end, failed to push availability')
+            msg = "Failed. Availability conflict"
+            break;
+        }
+    }
+
+    if (msg != 'Failed. Availability conflict')
+        u.availability.push({
+            availabilityStart: req.body.availabilityStart,
+            availabilityEnd: req.body.availabilityEnd,  
+        })
+    // console.log(u)
     // constole.log(users.find(user => user.name === req.user.name))
-    res.render('availability.ejs', { name: req.user.name, users });
+    res.render('availability.ejs', { name: req.user.name, u, error: msg });
 })
 
 app.get('/history', checkAuthenticated, (req, res) => {

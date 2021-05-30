@@ -94,17 +94,21 @@
       <main class="form-signin">
         <h1>Hi <%= name %></h1>
         
-        <form id="availabilityForm" action="/availability" method="POST">
+        <form name="availabilityForm" id="availabilityForm" action="/availability" method="POST" onsubmit="return validateForm()">
             <label for="datetime-availability-start">Start (date and time):</label>
             <input type="datetime-local" id="datetime-availability-start" name="availabilityStart">
             <label for="datetime-availability-end">End (date and time):</label>
             <input type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
             <input type="submit">
         </form>
-        
+        <% if (error) { %>
+            <%= error %>
+          <% } %>
         <h1>Availability summary</h1>
         <% for (let i = 0; i < u.availability.length; i++) { %>
-            <li> <%= u.availability[i].availabilityStart %>  </li> 
+            <li> <%= u.availability[i].availabilityStart %>  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+              </svg> </li> 
         <% } %>
 
         <form action="/logout?_method=DELETE" method="POST">
@@ -112,5 +116,35 @@
         </form>
       </main>
     </div>
+
+    <script>
+        function validateForm() {
+            let start = document.forms["availabilityForm"]["availabilityStart"].value;
+            let end = document.forms["availabilityForm"]["availabilityEnd"].value;
+
+
+
+            console.log('third check')
+            let now = new Date();
+            console.log(now)
+            if (start < now || end < now) {
+                alert("Date must be in the future");
+                return false;
+            }
+
+            if (start == "" || end == "") {
+                alert("Start and end time must be filled out");
+                return false;
+            }
+
+            console.log('second check')
+            if (start >= end) {
+                alert("Invalid time sequence")
+                return false
+            }
+
+            
+        }
+    </script>
   </body>
 </html>
