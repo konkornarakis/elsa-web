@@ -4,9 +4,6 @@
 </head>
 <body>
     <h1>Login</h1>
-    <% if (messages.error) { %>
-        <%= messages.error %>
-    <% } %>
     <form action="/login" method="POST">
         <div>
             <label for="email">Email</label>
@@ -111,28 +108,32 @@ body {
   </head>
   <body class="text-center">
     
-<main class="form-signin">
-  <form action="/login" method="POST">
-    <img class="mb-4" src="/views/resources/logo.svg" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">Please login</h1>
+    <main class="form-signin">
+      <form action="/login" method="POST">
+        <img class="mb-4" src="/views/resources/logo.svg" alt="" width="72" height="57">
+        <h1 class="h3 mb-3 fw-normal">Please login</h1>
 
-    <div class="form-floating">
-      <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
-      <label for="floatingInput">Email address</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
-      <label for="floatingPassword">Password</label>
-    </div>
+        <div class="form-floating">
+          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
+          <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
+          <label for="floatingPassword">Password</label>
+        </div>
 
-    <div class="checkbox mb-3">
-      <label>
-        <input type="checkbox" value="remember-me"> Remember me
-      </label>
-    </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
-    <a href="/register">I don't have an account</a>
-    <p class="mt-5 mb-3 text-muted">© 2021</p>
-  </form>
-</main>
-</body></html>
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+        <a href="/register">I don't have an account</a>
+        <p class="mt-5 mb-3 text-muted">© 2021</p>
+      </form>
+      <% if (messages.error) { %>
+        <%= messages.error %>
+      <% } %>
+    </main>
+  </body>
+</html>

@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.83.1">
-    <title>Δημιουργία αποστολής</title>
+    <title>Elsa</title>
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -51,9 +51,9 @@
         background-color: white;
       }
 
-      #navbar_logo {
+      /* #navbar_logo {
         border: 2px solid black;
-      }
+      } */
 
     </style>
   </head>
@@ -64,7 +64,7 @@
   
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
-            <li><a href="/" class="nav-link px-2 link-secondary">Overview</a></li>
+            <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
             <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
             <li><a href="/history" class="nav-link px-2 link-dark">History</a></li>
             <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
@@ -89,11 +89,18 @@
         </div>
       </div>
     </header>
-    <main class="container">
-        <div class="text-center">
-            <h1>Η δημιουργία παραγγελίας ολοκληρώθηκε <%= name %></h1>
-            <p>Όνομα παραγγελίας: <%= parcelname %> </p>
-        </div>
-    </main>
+    <div class="text-center">
+      <main class="form-signin">
+        <h1>Hi <%= name %></h1>
+        <form action="/availability" method="POST">
+            <label for="birthdaytime">Availability (date and time):</label>
+            <input type="datetime-local" id="birthdaytime" name="birthdaytime">
+            <input type="submit">
+        </form>
+        <form action="/logout?_method=DELETE" method="POST">
+          <button class="w-20 btn btn-lg btn-primary" type="submit">Log out</button>
+        </form>
+      </main>
+    </div>
   </body>
 </html>

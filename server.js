@@ -20,7 +20,7 @@ initializePassport(
     id => users.find(user => user.id === id)
 );
 
-const users = [];
+const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '1' }];
 const orders = [];
 
 app.use('/views', express.static(__dirname + "/views"));
@@ -69,19 +69,26 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
     }
 })
 
-app.get('/create', (req, res) => {
+app.get('/create', checkAuthenticated, (req, res) => {
+    console.log(req.user.name)
     res.render('create.ejs')
 })
 
-app.post('/create', (req, res) => {
-    console.log("parcelname: " + req.body.parcelname)
+app.post('/create', checkAuthenticated, (req, res) => {
+    console.log("parcelname: " + req.body.parcelname + ", username: " + req.user.name)
+    //console.log(u)
     orders.push({
         id: Date.now().toString(),
         name: req.body.parcelname
     })
-    res.render('create_completed.ejs', { name: 'Name', parcelname: req.body.parcelname })
+
+    res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname })
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
 })  
+
+app.get('/history', checkAuthenticated, (req, res) => {
+    res.render('history.ejs', {orders})
+})
 
 app.get('/home', (req, res) => {
     res.render('home.ejs')

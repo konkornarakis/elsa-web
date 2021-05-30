@@ -110,6 +110,9 @@
                 <a href="/login">I already have an account</a> 
                 <p class="mt-5 mb-3 text-muted">© 2021</p>
             </form>
+            <% if (messages.error) { %>
+                <%= messages.error %>
+              <% } %>
         </main>
     </body>
 </html>
