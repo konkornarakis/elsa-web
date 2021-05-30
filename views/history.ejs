@@ -51,10 +51,6 @@
         background-color: white;
       }
 
-      #navbar_logo {
-        border: 2px solid black;
-      }
-
     </style>
   </head>
   <body>
@@ -91,9 +87,9 @@
       </div>
     </header>
     <main class="container text-center">
-        <h1>History</h1>
+        <h1>Orders created - History</h1>
         <% if (orders.length) {
-            %><ul>
+            %><ul class="list-unstyled">
               <% orders.forEach((order) => {
                 %>
                   <li>parcel name: <%= order.name %></li>

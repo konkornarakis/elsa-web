@@ -9,26 +9,9 @@ const passport = require('passport');
 const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
-const path = require('path');
-
-// Database
-const config = require('./config')
-const mongoClient = require('mongodb').MongoClient
-const cors = require('cors')
-
-//that get us connected to the db and provide us with the collection
-mongoClient.connect(`mongodb://${config.dbhost}`, {
-    userNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(client => {
-    const db = client.db(config.dbName)
-    const collection = db.collection(config.dbCollection)
-    app.locals[config.dbCollection] = collection
-})
-
+const path = require('path')
 
 const initializePassport = require('./passport-config');
-const { MongoClient } = require('mongodb');
 initializePassport(
     passport,
     email => users.find(user => user.email === email),
@@ -37,7 +20,6 @@ initializePassport(
 
 const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '1', availability: [] }]
 const orders = []
-const availability = []
 
 app.use('/views', express.static(__dirname + "/views"));
 app.set('view-engine', 'ejs');
@@ -51,13 +33,6 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
-// middleware to make the collection easily available to all of our routes
-app.use(cors())
-app.use((req, res, next) => {
-    const collection = req.app.locals[config.dbCollection]
-    req.collection = collection
-    next()
-})
 
 app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', { name: req.user.name });
@@ -165,6 +140,12 @@ app.get('/home', (req, res) => {
 app.delete('/logout', (req, res) => {
     req.logout()
     res.redirect('/login')
+})
+
+//always last
+app.get('*', (req, res) => {
+    res.status(404)
+    res.render('notfound.ejs')
 })
 
 function checkAuthenticated(req, res, next) {
