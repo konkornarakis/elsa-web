@@ -23,7 +23,8 @@
     "mssql": "^7.1.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "tedious": "^11.0.8"
+    "tedious": "^11.0.8",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",

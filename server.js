@@ -10,6 +10,10 @@ const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
 const path = require('path')
+const { 
+    v1: uuidv1,
+    v4: uuidv4,
+} = require('uuid');
 
 const initializePassport = require('./passport-config');
 initializePassport(
@@ -20,6 +24,8 @@ initializePassport(
 
 const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '1', availability: [] }]
 const orders = []
+const toDeliver = []
+const toReceive = []
 
 app.use('/views', express.static(__dirname + "/views"));
 app.set('view-engine', 'ejs');
@@ -46,19 +52,19 @@ var sqlConfig = {
 };
 
 app.get('/s', (req, res) => {
-    (async function () {
-        try {
-            console.log("sql connecting......")
-            let pool = await sql.connect(sqlConfig)
-            let result = await pool.request()
-                .query('SELECT TOP (1000) [id], [name] FROM [Elsa].[dbo].[Test];')  // subject is my database table name
-      
-            console.log('sql results: ')
-            console.log(result) 
-        } catch (err) {
-            console.log(err);
-        }
-      })()
+    // (async function () {
+    //     try {
+    //         console.log("sql connecting...")
+    //         console.log(`INSERT INTO [Elsa].[dbo].[Test] VALUES (100, 'Michael');`)
+    //         let pool = await sql.connect(sqlConfig)
+    //         let result = await pool.request()
+    //             .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', 'test_packet1', '789', 'Sender_address', 'Receiver_id', 'Receiver_address', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL);`)
+    //         console.log('sql results: ')
+    //         console.log(result)
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // })()
 })
 
 
@@ -94,8 +100,21 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         email: req.body.email,
         password: hashedPassword
       })
-      console.log('redirecting to login.ejs')
-      res.redirect('/login')
+
+        (async function () {
+            try {
+                console.log("sql connecting...")
+                let pool = await sql.connect(sqlConfig)
+                let result = await pool.request()
+                    .query(`INSERT INTO [Elsa].[dbo].[Users] VALUES ('${uuidv4()}', '${req.body.name}', '${req.body.email}', '${req.body.hashedPassword}');`)
+                console.log('sql results: ')
+                console.log(result)
+            } catch (err) {
+                console.log(err);
+            }
+        })()
+        console.log('redirecting to login.ejs')
+        res.redirect('/login')
     } catch {
         console.log('rendering register.ejs')
         res.redirect('/register')
@@ -110,10 +129,23 @@ app.get('/create', checkAuthenticated, (req, res) => {
 app.post('/create', checkAuthenticated, (req, res) => {
     // console.log("parcelname: " + req.body.parcelname + ", username: " + req.user.name)
     //console.log(u)
-    orders.push({
-        id: Date.now().toString(),
-        name: req.body.parcelname
-    })
+    // orders.push({
+    //     id: Date.now().toString(),
+    //     name: req.body.parcelname
+    // })
+
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            let result = await pool.request()
+                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', 'Sender_address', 'Receiver_id', 'Receiver_address', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL);`)
+            console.log('sql results: ')
+            console.log(result)
+        } catch (err) {
+            console.log(err);
+        }
+    })()
 
     console.log('rendering create_completed.ejs')
     res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname })

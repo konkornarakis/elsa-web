@@ -87,16 +87,117 @@
       </div>
     </header>
     <main class="container text-center">
-        <h1>Orders created - History</h1>
-        <% if (orders.length) {
-            %><ul class="list-unstyled">
-              <% orders.forEach((order) => {
-                %>
-                  <li>parcel name: <%= order.name %></li>
-                <%
-              }) %>
-            </ul><%
-        } %>
+        <h1>Orders you created</h1>
+        <% if (orders.length) { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Order name</th>
+              <th scope="col">Time created</th>
+              <th scope="col">Status</th>
+
+              <th scope="col">Sender name</th>
+              <th scope="col">Sender address</th>
+              <th scope="col">Receiver name</th>
+              <th scope="col">Receiver address</th>
+              <th scope="col">Delivery name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach((order) => { %>
+              <tr>  
+                <th scope="row">1</th>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td>
+                <td><%= order.name %></td> 
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } else { %>
+          nothing to display
+        <% } %>
+
+
+        <h1>Orders you received</h1>
+        <% if (orders.length) { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Order name</th>
+                <th scope="col">Time created</th>
+                <th scope="col">Status</th>
+  
+                <th scope="col">Sender name</th>
+                <th scope="col">Sender address</th>
+                <th scope="col">Receiver name</th>
+                <th scope="col">Receiver address</th>
+                <th scope="col">Delivery name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% orders.forEach((order) => { %>
+                <tr>  
+                  <th scope="row">1</th>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td> 
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <% } else { %>
+            nothing to display
+          <% } %>
+
+        <h1>Orders you delivered</h1>
+        <% if (orders.length) { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Order name</th>
+                <th scope="col">Time created</th>
+                <th scope="col">Status</th>
+  
+                <th scope="col">Sender name</th>
+                <th scope="col">Sender address</th>
+                <th scope="col">Receiver name</th>
+                <th scope="col">Receiver address</th>
+                <th scope="col">Delivery name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% orders.forEach((order) => { %>
+                <tr>  
+                  <th scope="row">1</th>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td>
+                  <td><%= order.name %></td> 
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <% } else { %>
+            nothing to display
+          <% } %>
     </main>
   </body>
 </html>

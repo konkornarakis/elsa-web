@@ -1,24 +1,22 @@
-user
-    user_id
-    user_name
-    hashedpassword
+[Elsa].[dbo].[Users]
+    id
+    username
+    hashedpw
 
-parcel
-    parcel_id -- μοναδικό αναγνωριστικό παραγγελίας
-    sender_id -- το user_id ενός user o οποίος είναι ο αποστολέας της παραγγελίας
-    receiver_id -- το user_id ενός user o οποίος είναι ο παραλήπτης της παραγγελίας
-    deliver_id -- το user_id ενός user o οποίος είναι ο διανομέας της παραγγελίας
-    date_added  -- ημερομηνία δημιουργίας της παραγγελίας
-    days_on_transit 
-    sender_address  -- διεύθυνση αποστολής
-    receiver_address -- διεύθυνση παραλαβής
-    status_id -- 
-
-status
-    created             -- η παραγγελία καταχωρήθηκε στο σύστημα
-    ready_to_dispatch   -- η παραγγελία είναι έτοιμη για να την παραλάβει ο διανομέας
-    assigned            -- η παραγγελία έχει ανατεθεί σε διανομέα
-    in_transit          -- η παραγγελία είναι στον διανομέα
-    out_for_delivery    -- ο διανομέας πηγαίνει προς στον παραλήπτη για παράδοση
-    delivered           -- η παραγγελία παραδόθηκε επιτυχώς
-    alert               -- η παραγγελία δεν παραδόθηκε λόγω προβλήματος
+[Elsa].[dbo].[Orders]
+    id	int	Unchecked
+    name	nvarchar(50)	Unchecked
+    sender_id	int	Unchecked
+    sender_address	nvarchar(50)	Unchecked
+    receiver_id	int	Unchecked
+    receiver_address	nvarchar(50)	Unchecked
+    deliver_id	int	Checked
+    date_created	datetime	Unchecked
+    current_status	nvarchar(50)	Unchecked
+    status_created	datetime	Unchecked
+    status_ready	datetime	Checked
+    status_assigned	datetime	Checked
+    status_transit	datetime	Checked
+    status_out	datetime	Checked
+    status_delivered	datetime	Checked
+    status_alert	datetime	Checked
