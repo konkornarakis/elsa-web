@@ -137,18 +137,20 @@ app.post('/create', checkAuthenticated, (req, res) => {
     (async function () {
         try {
             console.log("sql connecting...")
+            console.log(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL, NULL);`)
             let pool = await sql.connect(sqlConfig)
             let result = await pool.request()
-                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', 'Sender_address', 'Receiver_id', 'Receiver_address', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL);`)
+                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL, NULL);`)
             console.log('sql results: ')
             console.log(result)
+            console.log('rendering create_completed.ejs')
+            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Success' })
         } catch (err) {
             console.log(err);
+            console.log('FAILURE')
+            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Failed' })
         }
     })()
-
-    console.log('rendering create_completed.ejs')
-    res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname })
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
 })  
 

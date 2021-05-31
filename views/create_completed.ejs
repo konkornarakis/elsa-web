@@ -88,8 +88,12 @@
     </header>
     <main class="container">
         <div class="text-center">
+          <% if (msg === 'Success') { %>
             <h1>Η δημιουργία παραγγελίας ολοκληρώθηκε <%= name %></h1>
             <p>Όνομα παραγγελίας: <%= parcelname %> </p>
+            <%} else {%>
+            <h1>Αποτυχία. Η δημιουργία παραγγελίας δεν ολοκληρώθηκε <%= name %></h1>
+            <% } %>
         </div>
     </main>
   </body>

@@ -88,68 +88,72 @@
     </header>
     <main class="container text-center p-4">
         <form action="/create" method="POST">
+          <div class="row">
+            <h2>Δημιουργία παραγγελίας</h2>
+          </div>
+          <div class="row">
             <div class="mb-3">
-                <label for="parcelname" class="form-label">Όνομα παραγγελίας</label>
-                <input type="text" name="parcelname" class="form-control" id="parcelname" aria-describedby="parcelnameHelp" required>
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+              <label for="parcelname" class="form-label">Όνομα παραγγελίας</label>
+              <input type="text" name="parcelname" class="form-control" id="parcelname" aria-describedby="parcelnameHelp" required>
+              <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
             </div>
+          </div>
+          
+          <div class="row">
+            <div class="col mb-3">
+              <label for="sendersAddress" class="form-label">Διεύθυνση παραλαβής</label>
+              <input type="text" name="sendersAddress" class="form-control" id="sendersAddress" aria-describedby="emailHelp">
+              <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+            </div>
+            <div class="col mb-3">
+                <label for="receiversAddress" class="form-label">Διεύθυνση αποστολής</label>
+                <input type="text" name="receiversAddress" class="form-control" id="receiversAddress" aria-describedby="emailHelp">
+                <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+            </div>
+          </div>
 
-            <div class="b-example-divider"></div>
+          <div class="row">
+            <div class="col mb-3">
+              <label for="receiversEmail" class="form-label">email παραλήπτη</label>
+              <input type="text" name="receiversEmail" class="form-control" id="receiversEmail">
+            </div>      
+          </div>
 
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Διεύθυνση παραλαβής</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+          <div class="row">
+            <div class="col mb-3">
+              <label for="parcelWidth" class="form-label">Πλάτος</label>
+              <input type="text" name="parcelWidth" class="form-control" id="parcelWidth">
             </div>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Διεύθυνση αποστολής</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            <div class="col mb-3">
+              <label for="parcelHeight" class="form-label">Ύψος</label>
+              <input type="text" name="parcelHeight" class="form-control" id="parcelHeight">
             </div>
-            <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">username παραλήπτη</label>
-              <input type="email" class="form-control" id="exampleInputPassword1">
+            <div class="col mb-3">
+              <label for="parcelLength" class="form-label">Μήκος</label>
+              <input type="text" name="parcelLength" class="form-control" id="parcelLength">
             </div>
-            <div class="b-example-divider"></div>
-              
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-              <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
+          </div>
 
-            <div class="b-example-divider"></div>
-            
-            <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Πλάτος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Ύψος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Μήκος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Βάρος</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Εκτιμώμενη αξία</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Σύντομη περιγραφή πακέτου</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
-              </div>
-            <div class="mb-3 form-check">
+          <div class="row">
+            <div class="col mb-3">
+              <label for="parcelWeight" class="form-label">Βάρος</label>
+              <input type="text" name="parcelWeight" class="form-control" id="parcelWeight">
+            </div>
+            <div class="col mb-3">
+              <label for="parcelValue" class="form-label">Εκτιμώμενη αξία</label>
+              <input type="text" name="parcelValue" class="form-control" id="parcelValue">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2 mb-3 form-check">
               <input type="checkbox" class="form-check-input" id="exampleCheck1">
               <label class="form-check-label" for="exampleCheck1">Check me out</label>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+          </div>
+          <div class="row">
+            <button type="submit" class="col-2 btn btn-primary">Submit</button>
+          </div>
+        </form>
 <!-- 
           <form class="row g-3 needs-validation" novalidate>
             <div class="col-md-4">
