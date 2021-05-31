@@ -152,7 +152,31 @@ app.post('/create', checkAuthenticated, (req, res) => {
         }
     })()
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
-})  
+}) 
+
+app.get('/orders_created', checkAuthenticated, (req, res) => {
+
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            console.log(`SELECT name, date_created, current_status, (SELECT TOP 1 name FROM [Elsa].[dbo].[Users] WHERE id = '${req.user.id}'), sender_address, (SELECT TOP 1 name FROM [Elsa].[dbo].[Users] WHERE id = receiver_id), receiver_address, 'deliver_id' FROM [Elsa].[dbo].[Orders] WHERE sender_id = '${req.user.id}');`)
+            let pool = await sql.connect(sqlConfig)
+            let result = await pool.request()
+                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL, NULL);`)
+            console.log('sql results: ')
+            console.log(result)
+            console.log('rendering create_completed.ejs')
+            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Success' })
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Failed' })
+        }
+    })()
+    // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
+})
+
+
 
 app.get('/availability', checkAuthenticated, (req, res) => {
     let u = users.find(user => user.name === req.user.name)
