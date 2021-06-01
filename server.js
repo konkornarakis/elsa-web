@@ -42,6 +42,7 @@ app.use(methodOverride('_method'))
 
 // Database stuff
 var sql = require('mssql');
+const { create } = require('domain');
 
 var sqlConfig = {
     user: 'elsa',
@@ -226,8 +227,39 @@ app.post('/availability', checkAuthenticated, (req, res) => {
 })
 
 app.get('/history', checkAuthenticated, (req, res) => {
-    console.log('rendering history.ejs')
-    res.render('history.ejs', {orders})
+
+    //get data for orders created
+    let created = '', received = '', delivered = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            created = await pool.request()
+                .query(`SELECT * FROM [Elsa].[dbo].[Orders] WHERE sender_id = '${req.user.id}'`)
+            
+            received = await pool.request()
+                .query(`SELECT * FROM [Elsa].[dbo].[Orders] WHERE receiver_id = '${req.user.id}'`)
+
+            delivered = await pool.request()
+                .query(`SELECT * FROM [Elsa].[dbo].[Orders] WHERE deliver_id = '${req.user.id}'`)
+            console.log('sql results: ')
+            created = created.recordset
+            received = received.recordset
+            delivered = delivered.recordset
+
+            console.log('printing results')
+            console.log(created)
+            console.log(received)
+            console.log(delivered)
+            console.log('done printing results')
+            res.render('history.ejs', { created: created, received: received, delivered: delivered  })
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            res.render('history.ejs', { created: 'error', received: 'error', delivered: 'error'  })
+        }
+        // res.render('history.ejs', { created: created, received: received, delivered: delivered  })
+    })();
 })
 
 app.get('/home', (req, res) => {
