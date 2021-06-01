@@ -27,6 +27,8 @@ const orders = []
 const toDeliver = []
 const toReceive = []
 
+app.use(express.cookieParser('secret'));
+app.use(express.cookieSession());
 app.use('/views', express.static(__dirname + "/views"));
 app.set('view-engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
