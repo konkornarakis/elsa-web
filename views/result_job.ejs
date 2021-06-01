@@ -63,7 +63,7 @@
                 <li><a href="/" class="nav-link px-2 link-secondary">Overview</a></li>
                 <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
                 <li><a href="/availability" class="nav-link px-2 link-dark">Availability</a></li>
-                <li><a href="#" class="nav-link px-2 link-dark">History</a></li>
+                <li><a href="/history" class="nav-link px-2 link-dark">History</a></li>
                 <li><a href="/job" class="nav-link px-2 link-dark">Job</a></li>
                 <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
             </ul>
@@ -91,107 +91,16 @@
       </div>
     </header>
     <main class="container text-center">
-        <h1>Orders you created</h1>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Order name</th>
-              <th scope="col">Time created</th>
-              <th scope="col">Status</th>
-
-              <th scope="col">Sender name</th>
-              <th scope="col">Sender address</th>
-              <th scope="col">Receiver name</th>
-              <th scope="col">Receiver address</th>
-              <th scope="col">Delivery name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%=  %> 
-            <% for(let i = 0; i<created.length; i++) {%>
-              <tr>  
-                <th scope="row"><%= i+1 %></th>
-                <td><%= created[i].name %></td>
-                <td><%= created[i].date_created %></td>
-                <td><%= created[i].current_status %></td>
-                <td><%= created[i].sender_name %></td>
-                <td><%= created[i].sender_address %></td>
-                <td><%= created[i].receiver_name %></td>
-                <td><%= created[i].receiver_address %></td>
-                <td><%= created[i].deliver_name %></td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
-
-        <h1>Orders you received</h1>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Order name</th>
-              <th scope="col">Time created</th>
-              <th scope="col">Status</th>
-
-              <th scope="col">Sender name</th>
-              <th scope="col">Sender address</th>
-              <th scope="col">Receiver name</th>
-              <th scope="col">Receiver address</th>
-              <th scope="col">Delivery name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%=  %> 
-            <% for(let i = 0; i<received.length; i++) {%>
-              <tr>  
-                <th scope="row"><%= i+1 %></th>
-                <td><%= received[i].name %></td>
-                <td><%= received[i].date_created %></td>
-                <td><%= received[i].current_status %></td>
-                <td><%= received[i].sender_name %></td>
-                <td><%= received[i].sender_address %></td>
-                <td><%= received[i].receiver_name %></td>
-                <td><%= received[i].receiver_address %></td>
-                <td><%= received[i].deliver_name %></td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
-
-        <h1>Orders you delivered</h1>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Order name</th>
-              <th scope="col">Time created</th>
-              <th scope="col">Status</th>
-
-              <th scope="col">Sender name</th>
-              <th scope="col">Sender address</th>
-              <th scope="col">Receiver name</th>
-              <th scope="col">Receiver address</th>
-              <th scope="col">Delivery name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%=  %> 
-            <% for(let i = 0; i<delivered.length; i++) {%>
-              <tr>  
-                <th scope="row"><%= i+1 %></th>
-                <td><%= delivered[i].name %></td>
-                <td><%= delivered[i].date_created %></td>
-                <td><%= delivered[i].current_status %></td>
-                <td><%= delivered[i].sender_name %></td>
-                <td><%= delivered[i].sender_address %></td>
-                <td><%= delivered[i].receiver_name %></td>
-                <td><%= delivered[i].receiver_address %></td>
-                <td><%= delivered[i].deliver_name %></td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
+      <form action="/getjob" method="GET">
+        <h3>Ζήτα να αναλάβεις μια μεταφορά, πατώντας το κουμπί</h3>
+        <button type="submit">Ξεκίνα</button>
+      </form>
+        <% if (response === 'fail') { %>
+          <h3>Δεν υπάρχει κάτι αυτή τη στιγμή :(</h3>  
+        <% } else { %>
+          <h3>Βρήκαμε κάτι :)</h3>
+        <% } %>
+      </table>
     </main>
   </body>
 </html> 

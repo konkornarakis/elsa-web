@@ -47,7 +47,7 @@ const { create } = require('domain');
 var sqlConfig = {
     user: 'elsa',
     password: 'elsa',
-    server: `DESKTOP-SAHGON\\SAHGONMSSQL`,  
+    server: `79.131.185.146`,  
     database: 'Elsa',
     trustServerCertificate: true,
 };
@@ -235,13 +235,28 @@ app.get('/history', checkAuthenticated, (req, res) => {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
             created = await pool.request()
-                .query(`SELECT * FROM [Elsa].[dbo].[Orders] WHERE sender_id = '${req.user.id}'`)
+                .query(`SELECT o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] s on s.id = o.sender_id
+                INNER JOIN [Elsa].[dbo].[Users] r on r.id = o.receiver_id
+                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.receiver_id
+                WHERE o.sender_id = '${req.user.id}'`)
             
             received = await pool.request()
-                .query(`SELECT * FROM [Elsa].[dbo].[Orders] WHERE receiver_id = '${req.user.id}'`)
+                .query(`SELECT o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] s on s.id = o.sender_id
+                INNER JOIN [Elsa].[dbo].[Users] r on r.id = o.receiver_id
+                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.receiver_id
+                WHERE o.receiver_id = '${req.user.id}'`)
 
             delivered = await pool.request()
-                .query(`SELECT * FROM [Elsa].[dbo].[Orders] WHERE deliver_id = '${req.user.id}'`)
+                .query(`SELECT o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] s on s.id = o.sender_id
+                INNER JOIN [Elsa].[dbo].[Users] r on r.id = o.receiver_id
+                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.receiver_id
+                WHERE o.deliver_id = '${req.user.id}'`)
             console.log('sql results: ')
             created = created.recordset
             received = received.recordset
@@ -259,6 +274,48 @@ app.get('/history', checkAuthenticated, (req, res) => {
             res.render('history.ejs', { created: 'error', received: 'error', delivered: 'error'  })
         }
         // res.render('history.ejs', { created: created, received: received, delivered: delivered  })
+    })();
+})
+
+app.get('/job', checkAuthenticated, (req, res) => {
+    console.log('rendering job.ejs')
+    res.render('job.ejs')
+})
+
+app.get('/getjob', checkAuthenticated, (req, res) => {
+    let response = '';
+    let response2 = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            response = await pool.request()
+                .query(`SELECT TOP 1 id
+                FROM [Elsa].[dbo].[Orders] o
+                WHERE current_status = 'CREATED' AND deliver_id IS NULL AND sender_id != '${req.user.id}' AND receiver_id != '${req.user.id}'`)
+            
+            console.log('sql results: ')
+            response = response.recordset
+            console.log(response)
+            console.log('done printing results')
+            if (response.length ==- 0) {
+                console.log('sadly, no jobs')
+                response = 'fail'
+            } else {
+                console.log("found a job :), order with id: " + response[0].id)
+                response2 = await pool.request()
+                    .query(`UPDATE [Elsa].[dbo].[Orders]
+                    SET deliver_id = '${req.user.id}' , current_status = 'ASSIGNED', status_assigned = GETDATE()
+                    WHERE id = '${response[0].id}';`)
+            }
+            console.log('rendering getjob.ejs')
+            res.render('result_job.ejs', { response: response })
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering getjob.ejs')
+            res.render('result_job.ejs', { response: 'fail' })
+        }
     })();
 })
 
