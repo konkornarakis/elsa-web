@@ -91,107 +91,138 @@
       </div>
     </header>
     <main class="container text-center">
+      <p>
         <h1>Orders you created</h1>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Order name</th>
-              <th scope="col">Time created</th>
-              <th scope="col">Status</th>
-
-              <th scope="col">Sender name</th>
-              <th scope="col">Sender address</th>
-              <th scope="col">Receiver name</th>
-              <th scope="col">Receiver address</th>
-              <th scope="col">Delivery name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%=  %> 
-            <% for(let i = 0; i<created.length; i++) {%>
-              <tr>  
-                <th scope="row"><%= i+1 %></th>
-                <td><%= created[i].name %></td>
-                <td><%= created[i].date_created %></td>
-                <td><%= created[i].current_status %></td>
-                <td><%= created[i].sender_name %></td>
-                <td><%= created[i].sender_address %></td>
-                <td><%= created[i].receiver_name %></td>
-                <td><%= created[i].receiver_address %></td>
-                <td><%= created[i].deliver_name %></td>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCreated" aria-expanded="false" aria-controls="collapseExample">
+          εμφάνιση/απόκρυψη
+        </button>
+      </p>
+      <div class="collapse" id="collapseCreated">
+        <div class="card card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Order name</th>
+                <th scope="col">Time created</th>
+                <th scope="col">Status</th>
+    
+                <th scope="col">Sender name</th>
+                <th scope="col">Sender address</th>
+                <th scope="col">Receiver name</th>
+                <th scope="col">Receiver address</th>
+                <th scope="col">Delivery name</th>
               </tr>
-            <% } %>
-          </tbody>
-        </table>
-
+            </thead>
+            <tbody>
+              <%=  %> 
+              <% for(let i = 0; i<created.length; i++) {%>
+                <tr>  
+                  <th scope="row"><%= i+1 %></th>
+                  <td><%= created[i].name %></td>
+                  <td><%= created[i].date_created %></td>
+                  <td><%= created[i].current_status %></td>
+                  <td><%= created[i].sender_name %></td>
+                  <td><%= created[i].sender_address %></td>
+                  <td><%= created[i].receiver_name %></td>
+                  <td><%= created[i].receiver_address %></td>
+                  <td><%= created[i].deliver_name %></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <p>
         <h1>Orders you received</h1>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Order name</th>
-              <th scope="col">Time created</th>
-              <th scope="col">Status</th>
-
-              <th scope="col">Sender name</th>
-              <th scope="col">Sender address</th>
-              <th scope="col">Receiver name</th>
-              <th scope="col">Receiver address</th>
-              <th scope="col">Delivery name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%=  %> 
-            <% for(let i = 0; i<received.length; i++) {%>
-              <tr>  
-                <th scope="row"><%= i+1 %></th>
-                <td><%= received[i].name %></td>
-                <td><%= received[i].date_created %></td>
-                <td><%= received[i].current_status %></td>
-                <td><%= received[i].sender_name %></td>
-                <td><%= received[i].sender_address %></td>
-                <td><%= received[i].receiver_name %></td>
-                <td><%= received[i].receiver_address %></td>
-                <td><%= received[i].deliver_name %></td>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReceived" aria-expanded="false" aria-controls="collapseExample">
+          εμφάνιση/απόκρυψη
+        </button>
+      </p>
+      <div class="collapse" id="collapseReceived">
+        <div class="card card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Order name</th>
+                <th scope="col">Time created</th>
+                <th scope="col">Status</th>
+    
+                <th scope="col">Sender name</th>
+                <th scope="col">Sender address</th>
+                <th scope="col">Receiver name</th>
+                <th scope="col">Receiver address</th>
+                <th scope="col">Delivery name</th>
               </tr>
-            <% } %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <%=  %> 
+              <% for(let i = 0; i<received.length; i++) {%>
+                <tr>  
+                  <th scope="row"><%= i+1 %></th>
+                  <td><%= received[i].name %></td>
+                  <td><%= received[i].date_created %></td>
+                  <td><%= received[i].current_status %></td>
+                  <td><%= received[i].sender_name %></td>
+                  <td><%= received[i].sender_address %></td>
+                  <td><%= received[i].receiver_name %></td>
+                  <td><%= received[i].receiver_address %></td>
+                  <td><%= received[i].deliver_name %></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
+      <p>
         <h1>Orders you delivered</h1>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Order name</th>
-              <th scope="col">Time created</th>
-              <th scope="col">Status</th>
-
-              <th scope="col">Sender name</th>
-              <th scope="col">Sender address</th>
-              <th scope="col">Receiver name</th>
-              <th scope="col">Receiver address</th>
-              <th scope="col">Delivery name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%=  %> 
-            <% for(let i = 0; i<delivered.length; i++) {%>
-              <tr>  
-                <th scope="row"><%= i+1 %></th>
-                <td><%= delivered[i].name %></td>
-                <td><%= delivered[i].date_created %></td>
-                <td><%= delivered[i].current_status %></td>
-                <td><%= delivered[i].sender_name %></td>
-                <td><%= delivered[i].sender_address %></td>
-                <td><%= delivered[i].receiver_name %></td>
-                <td><%= delivered[i].receiver_address %></td>
-                <td><%= delivered[i].deliver_name %></td>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivered" aria-expanded="false" aria-controls="collapseExample">
+          εμφάνιση/απόκρυψη
+        </button>
+      </p>
+      <div class="collapse" id="collapseDelivered">
+        <div class="card card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Order name</th>
+                <th scope="col">Time created</th>
+                <th scope="col">Status</th>
+    
+                <th scope="col">Sender name</th>
+                <th scope="col">Sender address</th>
+                <th scope="col">Receiver name</th>
+                <th scope="col">Receiver address</th>
+                <th scope="col">Delivery name</th>
               </tr>
-            <% } %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <%=  %> 
+              <% for(let i = 0; i<delivered.length; i++) {%>
+                <tr>  
+                  <th scope="row"><%= i+1 %></th>
+                  <td><%= delivered[i].name %></td>
+                  <td><%= delivered[i].date_created %></td>
+                  <td><%= delivered[i].current_status %></td>
+                  <td><%= delivered[i].sender_name %></td>
+                  <td><%= delivered[i].sender_address %></td>
+                  <td><%= delivered[i].receiver_name %></td>
+                  <td><%= delivered[i].receiver_address %></td>
+                  <td><%= delivered[i].deliver_name %></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      
+
+     
     </main>
   </body>
 </html> 
