@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.83.1">
-    <title>Ιστορικό</title>
+    <title>Μεταφορά</title>
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -64,7 +64,9 @@
                 <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
                 <li><a href="/availability" class="nav-link px-2 link-dark">Availability</a></li>
                 <li><a href="/history" class="nav-link px-2 link-dark">History</a></li>
-                <li><a href="/job" class="nav-link px-2 link-secondary">Job</a></li>
+                <li><a href="/job" class="nav-link px-2 link-dark">Job</a></li>
+                <li><a href="/deliver" class="nav-link px-2 link-secondary">Μεταφορά</a></li>
+
                 <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
             </ul>
   
@@ -95,40 +97,7 @@
         <h3>Ζήτα να αναλάβεις μια μεταφορά, πατώντας το κουμπί</h3>
         <button type="submit">Ξεκίνα</button>
       </form>
-        <% if (db_conn_status === '0') { %>
-          <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>  
-        <% } else if (db_response.length == 0) { %>
-          <h3>Δεν βρήκαμε κάτι</h3>
-        <% } else { %>
-          <h3>Βρήκαμε κάτι. Αναλαμβάνεις την παραγγελία με όνομα: <%= db_response[0].name %>.</h3>
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Όνομα παραγγελίας</th>
-                <th scope="col">Ημ/νία δημιουργίας</th>
-                <th scope="col">Κατάσταση</th>
-    
-                <th scope="col">Ον/νυμο αποστολέα</th>
-                <th scope="col">Δ/νση αποστολέα</th>
-                <th scope="col">Ον/νυμο παραλήπτη</th>
-                <th scope="col">Δ/νση παραλήπτη</th>
-              </tr>
-            </thead>
-            <tbody> 
-              <tr>  
-                <th scope="row"><%=db_response[0].id%></th>
-                <td><%= db_response[0].name %></td>
-                <td><%= db_response[0].status_created %></td>
-                <td>CREATED</td>
-                <td><%= db_response[0].sender_name %></td>
-                <td><%= db_response[0].sender_address %></td>
-                <td><%= db_response[0].receiver_name %></td>
-                <td><%= db_response[0].receiver_address %></td>
-              </tr>
-            </tbody>
-          </table>
-        <% } %>
+     
       </table>
     </main>
   </body>

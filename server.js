@@ -182,50 +182,98 @@ app.get('/orders_created', checkAuthenticated, (req, res) => {
 
 
 app.get('/availability', checkAuthenticated, (req, res) => {
-    let u = users.find(user => user.name === req.user.name)
-    // console.log(u)
+    let db_response = [];
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT
+                        [start_time]
+                        ,[end_time]
+                        FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time]`)
+            
+            db_response = db_response.recordset
+            console.log(db_response)
 
-    let msg = null;
-
-    // console.log('printing availability')
-    for (let i = 0; i < u.availability.length; i++) {
-        console.log(u.availability[i].availabilityStart)
-    }
-
-    console.log('rendering availability.ejs')
-    res.render('availability.ejs', { name: req.user.name, u, error: msg});
+            res.render('availability.ejs', { name:req.user.name, response:'', db_response:db_response, db_conn_status:'1' })
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering getjob.ejs')
+            res.render('availability.ejs', { name:req.user.name, response:'Failed to connect with the database', db_response:[], db_conn_status:'0' })
+        }
+    })();
 })
 
-app.post('/availability', checkAuthenticated, (req, res) => {
-    // console.log('POST request, availability')
-    // console.log(req.body)
-    let u = users.find(user => user.name === req.user.name)
+app.post('/availability', (req, res) => {
+    let name = req.user.name
+    let response = ''
 
-    let newStart = req.body.availabilityStart
-    let newEnd = req.body.availabilityEnd
+    let newStart = req.body.availabilityStart + ':00.000Z'
+    let newEnd = req.body.availabilityEnd + ':00.000Z'
 
-    let msg = 'Success. Availability added.'; 
+    let current_date = new Date().toISOString().slice(0, 16);
 
-    for (let i = 0; i < u.availability.length; i++) {
-        let start = u.availability[i].availabilityStart 
-        let end = u.availability[i].availabilityEnd
+    console.log("current_date: " + current_date + ", new start: " + newStart + ", new end: " + newEnd)
 
-        if (newStart < end) {
-            console.log('newStart < end, failed to push availability')
-            msg = "Failed. Availability conflict"
-            break;
-        }
-    }
 
-    if (msg != 'Failed. Availability conflict')
-        u.availability.push({
-            availabilityStart: req.body.availabilityStart,
-            availabilityEnd: req.body.availabilityEnd,  
-        })
-    // console.log(u)
-    // constole.log(users.find(user => user.name === req.user.name))
-    console.log('rendering availability.ejs')
-    res.render('availability.ejs', { name: req.user.name, u, error: msg });
+        let db_response = '';
+        (async function () {
+            try {
+                console.log("sql connecting...")
+                let pool = await sql.connect(sqlConfig)
+                db_response = await pool.request()
+                    .query(`SELECT
+                            [start_time]
+                            ,[end_time]
+                            FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time] ASC;`)
+                
+                db_response = db_response.recordset
+                console.log(db_response)
+
+                if (!(current_date < newStart && current_date < newEnd)) {
+                    response = 'Fail. Dates must be in future.'
+                    console.log('Dates must be in future.')
+                    res.render('availability.ejs', {name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
+                    return
+                }
+
+                response = 'Όλα φαίνονται καλά. Έγινε καταχώρηση.'
+    
+                for (let i = 0; i < db_response.length; i++) {
+                    console.log('newStart: ' + newStart + ', newEnd: ' + newEnd + ', db start_time: ' + ((new Date(db_response[i].start_time)).toISOString()) + ', db end_time: ' + ((new Date(db_response[i].end_time)).toISOString()))
+
+                    console.log(current_date < newEnd)
+                    if (newStart < ((new Date(db_response[i].end_time)).toISOString()) && newStart > ((new Date(db_response[i].start_time)).toISOString())) {
+                        response = 'Αποτυχία. Η ημ/νία έναρξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
+                        console.log(response)
+                        res.render('availability.ejs', { name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
+                        return
+                    } else if (newStart < ((new Date(db_response[i].start_time)).toISOString()) && newEnd > ((new Date(db_response[i].end_time)).toISOString())) {
+                        response = 'Αποτυχία. Η ημ/νία λήξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
+                        console.log(response)
+                        res.render('availability.ejs', { name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
+                        return
+                    }
+                }
+
+                let db_response2 = ''
+                console.log('inserting availability')
+                db_response2 = await pool.request()
+                    .query(`INSERT INTO [Elsa].[dbo].[Availability]
+                    values('${uuidv4()}', '${req.user.id}', '${newStart}', '${newEnd}');`)
+
+                console.log('done inserting availability')
+                // res.render('availability.ejs', { name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
+                res.redirect('/availability')
+            } catch (err) {
+                console.log(err);
+                console.log('FAILURE')
+                console.log('rendering getjob.ejs')
+                res.render('availability.ejs', { name:req.user.name, response: 'Αποτυχία επικοινωνίας με την βάση δεδομένων μας.', db_response:[], db_conn_status:'0'})
+            }
+        })();
 })
 
 app.get('/history', checkAuthenticated, (req, res) => {
@@ -285,40 +333,58 @@ app.get('/job', checkAuthenticated, (req, res) => {
 })
 
 app.get('/getjob', checkAuthenticated, (req, res) => {
-    let response = '';
-    let response2 = '';
+    let response = ''
+    let db_response = '';
+    let db_response2 = '';
     (async function () {
         try {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
-            response = await pool.request()
-                .query(`SELECT TOP 1 id
+            db_response = await pool.request()
+                .query(`SELECT TOP 1 o.[id] as id, o.[name] as name, o.[status_created] as status_created, u1.[name] as sender_name, o.[sender_address] as sender_address, u2.[name] as receiver_name, o.[receiver_address] as receiver_address
                 FROM [Elsa].[dbo].[Orders] o
-                WHERE current_status = 'CREATED' AND deliver_id IS NULL AND sender_id != '${req.user.id}' AND receiver_id != '${req.user.id}'`)
+                INNER JOIN Availability A ON (o.[status_created] > a.[start_time] AND o.[status_created] < a.[end_time])
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE o.[current_status] = 'CREATED' AND
+                a.[user_id] = '${req.user.id}' AND o.[deliver_id] IS NULL AND o.[sender_id] != '${req.user.id}' AND o.[receiver_id] != '${req.user.id}';`)
             
             console.log('sql results: ')
-            response = response.recordset
-            console.log(response)
+            db_response = db_response.recordset
+            console.log(db_response)
             console.log('done printing results')
-            if (response.length ==- 0) {
-                console.log('sadly, no jobs')
-                response = 'fail'
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δυστυχώς, δεν υπάρχει κάτι αυτή τη στιγμή.'
+                db_response = []
+
+                console.log('rendering getjob.ejs')
+                res.render('result_job.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
             } else {
-                console.log("found a job :), order with id: " + response[0].id)
-                response2 = await pool.request()
+                response = 'Βρήκαμε κάτι :)'
+                console.log(response)
+
+                console.log('rendering getjob.ejs')
+                res.render('result_job.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+                return
+
+                db_response2 = await pool.request()
                     .query(`UPDATE [Elsa].[dbo].[Orders]
                     SET deliver_id = '${req.user.id}' , current_status = 'ASSIGNED', status_assigned = GETDATE()
                     WHERE id = '${response[0].id}';`)
+
             }
-            console.log('rendering getjob.ejs')
-            res.render('result_job.ejs', { response: response })
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
             console.log('rendering getjob.ejs')
-            res.render('result_job.ejs', { response: 'fail' })
+            res.render('result_job.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
         }
     })();
+})
+
+app.get('/deliver', (req, res) => {
+    res.render('deliver.ejs')
 })
 
 app.get('/home', (req, res) => {

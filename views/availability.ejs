@@ -60,9 +60,9 @@
   
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
-            <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
+            <li><a href="#" class="nav-link px-2 link-dark">Overview</a></li>
             <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
-            <li><a href="/availability" class="nav-link px-2 link-dark">Availability</a></li>
+            <li><a href="/availability" class="nav-link px-2 link-secondary">Availability</a></li>
             <li><a href="/history" class="nav-link px-2 link-dark">History</a></li>
             <li><a href="/job" class="nav-link px-2 link-dark">Job</a></li>
             <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
@@ -91,8 +91,7 @@
     </header>
     <div class="container text-center p-5">
       <main class="form-signin">
-        <h1 class="p-3">Hi <%= name %></h1>
-        
+        <h1 class="p-3">Καταχώρηση διαθεσιμότητας</h1>
         <form class="p-3" name="availabilityForm" id="availabilityForm" action="/availability" method="POST" onsubmit="return validateForm()">
             <label for="datetime-availability-start">Start (date and time):</label>
             <input type="datetime-local" id="datetime-availability-start" name="availabilityStart">
@@ -100,23 +99,39 @@
             <input type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
             <button class="btn btn-primary" type="submit">Submit</button>
         </form>
-        <% if (error) { %>
-            <%= error %>
-          <% } %>
-        
+        <%= response %>
         <div class="p-3">
-            <h1>Availability summary</h1>
-            <ul class="list-unstyled">
-                <% for (let i = 0; i < u.availability.length; i++) { %>
-                    <li> <%= u.availability[i].availabilityStart %>  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                    </svg> </li> 
-                <% } %>
-            </ul>
+            <h1>Σύνοψη διαθεσιμότητας</h1>
+            <% if(db_conn_status == '1') { %>
+              <% if(db_response.length == 0) { %>
+                <h3>Δεν υπάρχουν δεδομένα προς εμφάνιση.</h3>
+              <% } else { %>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Start time</th>
+                      <th scope="col">End time</th>
+                    </tr>
+                  </thead>
+                  <tbody> 
+                    <% for(let i = 0; i<db_response.length; i++) {%>
+                      <tr>  
+                        <th scope="row"><%= i+1 %></th>
+                        <td><%= db_response[i].start_time %></td>
+                        <td><%= db_response[i].end_time %></td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              <% } %>
+            <% } else if (db_conn_status == '0') { %>
+              <h3>Failed to connect with out database :(</h3>
+            <%} else { %>
+              <h3>Unknown error :(</h3> 
+            <% } %>
+            
         </div>
-        <form action="/logout?_method=DELETE" method="POST">
-          <button class="w-20 btn btn-lg btn-primary" type="submit">Log out</button>
-        </form>
       </main>
     </div>
 
@@ -125,15 +140,9 @@
             let start = document.forms["availabilityForm"]["availabilityStart"].value;
             let end = document.forms["availabilityForm"]["availabilityEnd"].value;
 
-
-
             console.log('third check')
             let now = new Date();
             console.log(now)
-            if (start < now || end < now) {
-                alert("Date must be in the future");
-                return false;
-            }
 
             if (start == "" || end == "") {
                 alert("Start and end time must be filled out");
@@ -145,8 +154,6 @@
                 alert("Invalid time sequence")
                 return false
             }
-
-            
         }
     </script>
   </body>
