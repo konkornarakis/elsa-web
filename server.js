@@ -22,7 +22,9 @@ initializePassport(
     id => users.find(user => user.id === id)
 );
 
-const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '1', availability: [] }]
+const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '0', availability: [] },
+{ id: 2, name: 'Alexandros', email: 'a@a', password: '1', availability: [] },
+{ id: 3, name: 'Rafael', email: 'r@r', password: '2', availability: [] }]
 const orders = []
 const toDeliver = []
 const toReceive = []
@@ -45,6 +47,7 @@ app.use(methodOverride('_method'))
 // Database stuff
 var sql = require('mssql');
 const { create } = require('domain');
+const { response } = require('express');
 
 var sqlConfig = {
     user: 'elsa',
@@ -53,23 +56,6 @@ var sqlConfig = {
     database: 'Elsa',
     trustServerCertificate: true,
 };
-
-app.get('/s', (req, res) => {
-    // (async function () {
-    //     try {
-    //         console.log("sql connecting...")
-    //         console.log(`INSERT INTO [Elsa].[dbo].[Test] VALUES (100, 'Michael');`)
-    //         let pool = await sql.connect(sqlConfig)
-    //         let result = await pool.request()
-    //             .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', 'test_packet1', '789', 'Sender_address', 'Receiver_id', 'Receiver_address', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL);`)
-    //         console.log('sql results: ')
-    //         console.log(result)
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // })()
-})
-
 
 // end of database stuff
 
@@ -129,6 +115,8 @@ app.get('/create', checkAuthenticated, (req, res) => {
     res.render('create.ejs', { name: req.user.name })
 })
 
+
+//δημιουργία παραγγελίας
 app.post('/create', checkAuthenticated, (req, res) => {
     // console.log("parcelname: " + req.body.parcelname + ", username: " + req.user.name)
     //console.log(u)
@@ -139,15 +127,15 @@ app.post('/create', checkAuthenticated, (req, res) => {
 
     (async function () {
         try {
+            let new_id = uuidv4()
             console.log("sql connecting...")
-            console.log(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL, NULL);`)
             let pool = await sql.connect(sqlConfig)
             let result = await pool.request()
-                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL, NULL);`)
+                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${new_id}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', NULL, GETDATE(), 'CREATED', GETDATE(), '0', '0');`)
             console.log('sql results: ')
             console.log(result)
             console.log('rendering create_completed.ejs')
-            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Success' })
+            res.render('create_completed.ejs', { name: req.user.name, name: req.body.parcelname, id: new_id, msg:'Success' })
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
@@ -156,30 +144,6 @@ app.post('/create', checkAuthenticated, (req, res) => {
     })()
     // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
 }) 
-
-app.get('/orders_created', checkAuthenticated, (req, res) => {
-
-    (async function () {
-        try {
-            console.log("sql connecting...")
-            console.log(`SELECT name, date_created, current_status, (SELECT TOP 1 name FROM [Elsa].[dbo].[Users] WHERE id = '${req.user.id}'), sender_address, (SELECT TOP 1 name FROM [Elsa].[dbo].[Users] WHERE id = receiver_id), receiver_address, 'deliver_id' FROM [Elsa].[dbo].[Orders] WHERE sender_id = '${req.user.id}');`)
-            let pool = await sql.connect(sqlConfig)
-            let result = await pool.request()
-                .query(`INSERT INTO [Elsa].[dbo].[Orders] VALUES ('${uuidv4()}', '${req.body.parcelname}', '${req.user.id}', '${req.body.sendersAddress}', (SELECT TOP 1 id FROM [Elsa].[dbo].[Users] WHERE email = '${req.body.receiversEmail}'), '${req.body.receiversAddress}', 'Deliver_id', GETDATE(), 'CREATED', GETDATE(), NULL, NULL, NULL, NULL, NULL, NULL, NULL);`)
-            console.log('sql results: ')
-            console.log(result)
-            console.log('rendering create_completed.ejs')
-            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Success' })
-        } catch (err) {
-            console.log(err);
-            console.log('FAILURE')
-            res.render('create_completed.ejs', { name: req.user.name, parcelname: req.body.parcelname, msg:'Failed' })
-        }
-    })()
-    // res.redirect('/create_completed.ejs', { name: 'test', parcelname: req.body.parcelname })
-})
-
-
 
 app.get('/availability', checkAuthenticated, (req, res) => {
     let db_response = [];
@@ -206,7 +170,7 @@ app.get('/availability', checkAuthenticated, (req, res) => {
     })();
 })
 
-app.post('/availability', (req, res) => {
+app.post('/availability',checkAuthenticated, (req, res) => {
     let name = req.user.name
     let response = ''
 
@@ -285,28 +249,28 @@ app.get('/history', checkAuthenticated, (req, res) => {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
             created = await pool.request()
-                .query(`SELECT o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
+                .query(`SELECT o.id as id, o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] s on s.id = o.sender_id
                 INNER JOIN [Elsa].[dbo].[Users] r on r.id = o.receiver_id
-                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.receiver_id
-                WHERE o.sender_id = '${req.user.id}'`)
+                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.deliver_id
+                WHERE o.sender_id = '${req.user.id}';`)
             
             received = await pool.request()
-                .query(`SELECT o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
+                .query(`SELECT o.id as id, o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] s on s.id = o.sender_id
                 INNER JOIN [Elsa].[dbo].[Users] r on r.id = o.receiver_id
-                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.receiver_id
-                WHERE o.receiver_id = '${req.user.id}'`)
+                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.deliver_id
+                WHERE o.receiver_id = '${req.user.id}';`)
 
             delivered = await pool.request()
-                .query(`SELECT o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
+                .query(`SELECT o.id as id, o.name as name, date_created, current_status, s.name as sender_name, o.sender_address as sender_address, r.name as receiver_name, o.receiver_address as receiver_address, d.name as deliver_name
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] s on s.id = o.sender_id
                 INNER JOIN [Elsa].[dbo].[Users] r on r.id = o.receiver_id
-                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.receiver_id
-                WHERE o.deliver_id = '${req.user.id}'`)
+                INNER JOIN [Elsa].[dbo].[Users] d on d.id = o.deliver_id
+                WHERE o.deliver_id = '${req.user.id}';`)
             console.log('sql results: ')
             created = created.recordset
             received = received.recordset
@@ -341,9 +305,9 @@ app.get('/getjob', checkAuthenticated, (req, res) => {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
             db_response = await pool.request()
-                .query(`SELECT TOP 1 o.[id] as id, o.[name] as name, o.[status_created] as status_created, u1.[name] as sender_name, o.[sender_address] as sender_address, u2.[name] as receiver_name, o.[receiver_address] as receiver_address
+                .query(`SELECT TOP 1 o.[id] as id, o.[name] as name, o.[current_status] as current_status, o.[date_created] as date_created, u1.[name] as sender_name, o.[sender_address] as sender_address, u2.[name] as receiver_name, o.[receiver_address] as receiver_address
                 FROM [Elsa].[dbo].[Orders] o
-                INNER JOIN Availability A ON (o.[status_created] > a.[start_time] AND o.[status_created] < a.[end_time])
+                INNER JOIN Availability A ON (o.[date_created] > a.[start_time] AND o.[date_created] < a.[end_time])
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
                 WHERE o.[current_status] = 'CREATED' AND
@@ -352,6 +316,7 @@ app.get('/getjob', checkAuthenticated, (req, res) => {
             console.log('sql results: ')
             db_response = db_response.recordset
             console.log(db_response)
+
             console.log('done printing results')
             if (db_response.length == 0) {
                 console.log(response)
@@ -364,14 +329,14 @@ app.get('/getjob', checkAuthenticated, (req, res) => {
                 response = 'Βρήκαμε κάτι :)'
                 console.log(response)
 
+                db_response2 = await pool.request()
+                .query(`UPDATE [Elsa].[dbo].[Orders]
+                SET deliver_id = '${req.user.id}', current_status = 'ASSIGNED', status_last = GETDATE()
+                WHERE id = '${db_response[0].id}';`)
+
                 console.log('rendering getjob.ejs')
                 res.render('result_job.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
                 return
-
-                db_response2 = await pool.request()
-                    .query(`UPDATE [Elsa].[dbo].[Orders]
-                    SET deliver_id = '${req.user.id}' , current_status = 'ASSIGNED', status_assigned = GETDATE()
-                    WHERE id = '${response[0].id}';`)
 
             }
         } catch (err) {
@@ -383,7 +348,7 @@ app.get('/getjob', checkAuthenticated, (req, res) => {
     })();
 })
 
-app.get('/manage_deliver', (req, res) => {
+app.get('/manage_deliver', checkAuthenticated, (req, res) => {
     let response = ''
     let db_response = '';
     (async function () {
@@ -397,12 +362,13 @@ app.get('/manage_deliver', (req, res) => {
                 ,o.[sender_address] as sender_address
                 ,u2.[name] as receiver_name
                 ,o.[receiver_address] as receiver_address
+                ,ISNULL((SELECT name FROM Users WHERE id = O.deliver_id), '-') AS deliver_name
                 ,o.[date_created] as date_created
                 ,o.[current_status] as current_status
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'CREATED', 'ASSIGNED', 'DELIVERED','READY TO DISPATCH');`)
+                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -431,7 +397,7 @@ app.get('/manage_deliver', (req, res) => {
     })();
 })
 
-app.post('/set_deliver', (req, res) => {
+app.post('/set_deliver', checkAuthenticated, (req, res) => {
     
     let id = req.body.id
     let new_status = req.body.new_status
@@ -448,7 +414,7 @@ app.post('/set_deliver', (req, res) => {
             let pool = await sql.connect(sqlConfig)
             db_response = await pool.request()
                 .query(`UPDATE [Elsa].[dbo].[Orders]
-                SET current_status = '${new_status}'
+                SET current_status = '${new_status}', status_last = GETDATE()
                 WHERE id = '${id}' AND deliver_id = '${req.user.id}';`)
             
             console.log('sql results: ')
@@ -479,7 +445,7 @@ app.post('/set_deliver', (req, res) => {
     res.redirect('/manage_deliver')
 })
 
-app.get('/manage_receiver', (req, res) => {
+app.get('/manage_receiver', checkAuthenticated, (req, res) => {
     let response = ''
     let db_response = '';
     (async function () {
@@ -493,12 +459,13 @@ app.get('/manage_receiver', (req, res) => {
                 ,o.[sender_address] as sender_address
                 ,u2.[name] as receiver_name
                 ,o.[receiver_address] as receiver_address
+                ,ISNULL((SELECT name FROM Users WHERE id = O.deliver_id), '-') AS deliver_name
                 ,o.[date_created] as date_created
                 ,o.[current_status] as current_status
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'CREATED', 'ASSIGNED', 'DELIVERED','READY TO DISPATCH');`)
+                WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -527,7 +494,7 @@ app.get('/manage_receiver', (req, res) => {
     })();
 })
 
-app.post('/set_receiver', (req, res) => {
+app.post('/set_receiver', checkAuthenticated, (req, res) => {
     
     let id = req.body.id
     let new_status = req.body.new_status
@@ -575,7 +542,8 @@ app.post('/set_receiver', (req, res) => {
     res.redirect('/manage_receiver')
 })
 
-app.get('/manage_sender', (req, res) => {
+app.get('/manage_sender', checkAuthenticated, (req, res) => {
+    console.log('/manage_sender')
     let response = ''
     let db_response = '';
     (async function () {
@@ -589,12 +557,13 @@ app.get('/manage_sender', (req, res) => {
                 ,o.[sender_address] as sender_address
                 ,u2.[name] as receiver_name
                 ,o.[receiver_address] as receiver_address
+                ,ISNULL((SELECT name FROM Users WHERE id = O.deliver_id), '-') AS deliver_name
                 ,o.[date_created] as date_created
                 ,o.[current_status] as current_status
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [sender_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'CREATED', 'ASSIGNED', 'DELIVERED','READY TO DISPATCH ');`)
+                WHERE [sender_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'PICKUP', 'ASSIGNED', 'ON TRANSIT', 'DELIVERED','READY TO DISPATCH ');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -623,14 +592,12 @@ app.get('/manage_sender', (req, res) => {
     })();
 })
 
-app.post('/set_sender', (req, res) => {
-    
+app.post('/set_sender', checkAuthenticated, (req, res) => {
+    console.log('/set_sender')
     let id = req.body.id
     let new_status = req.body.new_status
     
     let col = ''
-    if (new_status == '')
-
     console.log('id: ' + id + ', new status: ' + new_status)
     let response = ''
     let db_response = '';
@@ -640,27 +607,30 @@ app.post('/set_sender', (req, res) => {
             let pool = await sql.connect(sqlConfig)
             db_response = await pool.request()
                 .query(`UPDATE [Elsa].[dbo].[Orders]
-                SET current_status = '${new_status}'
-                WHERE id = '${id}' AND sender_id = '${req.user.id}';`)
+                SET current_status = '${new_status}', status_last = GETDATE()
+                WHERE id = '${id}' AND sender_id = '${req.user.id}';
+                `)
+
+
             
-            console.log('sql results: ')
-            db_response = db_response.recordset
-            console.log(db_response)
-            console.log('done printing results')
-            if (db_response.length == 0) {
-                console.log(response)
-                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
-                db_response = []
+            // console.log('sql results: ')
+            // db_response = db_response.recordset
+            // console.log(db_response)
+            // console.log('done printing results')
+            // if (db_response.length == 0) {
+            //     console.log(response)
+            //     response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+            //     db_response = []
 
-                console.log('rendering manage_sender.ejs')
-                res.redirect('manage_sender.ejs')
-            } else {
-                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
-                console.log(response)
+            //     console.log('rendering manage_sender.ejs')
+            //     res.redirect('manage_sender.ejs')
+            // } else {
+            //     response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+            //     console.log(response)
 
-                console.log('rendering manage_sender.ejs')
+            //     console.log('rendering manage_sender.ejs')
                 res.redirect('manage_sender.ejs')
-            }
+            // }
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
@@ -669,6 +639,50 @@ app.post('/set_sender', (req, res) => {
         }
     })();
     res.redirect('/manage_sender')
+})
+
+app.get('/tracking/:id', (req, res) => {
+    console.log(`/tracking/${req.params.id}`)
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT [id], [status], [datetime], [comment]
+                FROM [Elsa].[dbo].[Tracking] WHERE [id] = '${req.params.id}';`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering tracking.ejs')
+                res.render('tracking.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering tracking.ejs')
+                res.render('tracking.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering tracking.ejs')
+            res.render('tracking.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+        }
+    })();
+})
+
+app.get('/rate_deliver', checkAuthenticated, (req, res) => {
+    res.render('rate_deliver.ejs')
 })
 
 app.get('/home', (req, res) => {

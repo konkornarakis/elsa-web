@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- saved from url=(0051)https://getbootstrap.com/docs/5.0/examples/sign-in/ -->
-<html lang="en">
+<html lang="en" class="h-100">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
@@ -10,11 +10,11 @@
     <meta name="generator" content="Hugo 0.83.1">
     <title>Ιστορικό</title>
 
+    <link rel="stylesheet" href="/views/resources/main.css">
+    <script src="https://use.fontawesome.com/0d6323d55e.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>    
 
     <!-- Bootstrap core CSS -->
 
@@ -53,7 +53,7 @@
 
     </style>
   </head>
-  <body>
+  <body class="h-100 d-flex flex-column">
     <header class="p-3 mb-3 border-bottom">
       <div class="container">
         <div id="navbar" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -71,21 +71,21 @@
                 <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
             </ul>
   
-          <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-            <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
-          </form>
+            <form action="/tracking/" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" id="searchform">
+              <input type="search" class="form-control" placeholder="Παρακολούθηση..." aria-label="Search" id="searchbox">
+            </form>
   
           <div class="dropdown text-end">
             <a href="https://getbootstrap.com/docs/5.0/examples/headers/#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
               <img src="/views/resources/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
             </a>
             <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Settings</a></li>
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Profile</a></li>
+              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Ρυθμίσεις</a></li>
+              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Προφίλ</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/logout?_method=DELETE" method="POST">
-                  <button class="dropdown-item" type="submit">Log out</button>
+                  <button class="dropdown-item" type="submit">Αποσύνδεση</button>
                 </form>
               </li>
             </ul>
@@ -121,7 +121,7 @@
               <%=  %> 
               <% for(let i = 0; i<created.length; i++) {%>
                 <tr>  
-                  <th scope="row"><%= i+1 %></th>
+                  <th scope="row"><%= created[i].id %></th>
                   <td><%= created[i].name %></td>
                   <td><%= (new Date(created[i].date_created)).toISOString().slice(0, 16) %></td>
                   <td><%= created[i].current_status %></td>
@@ -164,7 +164,7 @@
               <%=  %> 
               <% for(let i = 0; i<received.length; i++) {%>
                 <tr>  
-                  <th scope="row"><%= i+1 %></th>
+                  <th scope="row"><%= received[i].id %></th>
                   <td><%= received[i].name %></td>
                   <td><%= (new Date(received[i].date_created)).toISOString().slice(0, 16) %></td>
                   <td><%= received[i].current_status %></td>
@@ -206,7 +206,7 @@
             <tbody> 
               <% for(let i = 0; i<delivered.length; i++) {%>
                 <tr>  
-                  <th scope="row"><%= i+1 %></th>
+                  <th scope="row"><%= delivered[i].id %></th>
                   <td><%= delivered[i].name %></td>
                   <td><%= (new Date(delivered[i].date_created)).toISOString().slice(0, 16) %></td>
                   <td><%= delivered[i].current_status %></td>
@@ -372,5 +372,25 @@
       <!-- Copyright -->
     </footer>
     <!-- Footer -->
+    <script>
+      const searchbox = document.getElementById('searchbox')
+      const searchform = document.getElementById('searchform')
+      searchform.onsubmit = function() {
+        searchform.action += searchbox.value
+        console.log(searchform)
+      }
+    </script>
+    <script>
+      const searchbox = document.getElementById('searchbox')
+      const searchform = document.getElementById('searchform')
+      console.log(searchbox)
+      searchbox.onkeypress = function() {
+        console.log(searchbox.value)
+      }
+      searchform.onsubmit = function() {
+        // alert('submiting: ' + (searchbox.value).replace(/\s+/g, ''))
+        searchform.action += (searchbox.value).replace(/\s+/g, '')
+      }
+    </script>
   </body>
 </html> 
