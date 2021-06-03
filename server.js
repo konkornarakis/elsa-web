@@ -383,8 +383,292 @@ app.get('/getjob', checkAuthenticated, (req, res) => {
     })();
 })
 
-app.get('/deliver', (req, res) => {
-    res.render('deliver.ejs')
+app.get('/manage_deliver', (req, res) => {
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT o.[id] as id
+                ,o.[name] as name
+                ,u1.[name] as sender_name
+                ,o.[sender_address] as sender_address
+                ,u2.[name] as receiver_name
+                ,o.[receiver_address] as receiver_address
+                ,o.[date_created] as date_created
+                ,o.[current_status] as current_status
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'CREATED', 'ASSIGNED', 'DELIVERED','READY TO DISPATCH');`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering getjob.ejs')
+                res.render('manage_deliver.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering getjob.ejs')
+                res.render('manage_deliver.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering getjob.ejs')
+            res.render('manage_deliver.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+        }
+    })();
+})
+
+app.post('/set_deliver', (req, res) => {
+    
+    let id = req.body.id
+    let new_status = req.body.new_status
+    
+    let col = ''
+    if (new_status == '')
+
+    console.log('id: ' + id + ', new status: ' + new_status)
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`UPDATE [Elsa].[dbo].[Orders]
+                SET current_status = '${new_status}'
+                WHERE id = '${id}' AND deliver_id = '${req.user.id}';`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering getjob.ejs')
+                res.redirect('manage_deliver.ejs')
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering getjob.ejs')
+                res.redirect('manage_deliver.ejs')
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering getjob.ejs')
+            res.redirect('manage_deliver.ejs')
+        }
+    })();
+    res.redirect('/manage_deliver')
+})
+
+app.get('/manage_receiver', (req, res) => {
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT o.[id] as id
+                ,o.[name] as name
+                ,u1.[name] as sender_name
+                ,o.[sender_address] as sender_address
+                ,u2.[name] as receiver_name
+                ,o.[receiver_address] as receiver_address
+                ,o.[date_created] as date_created
+                ,o.[current_status] as current_status
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'CREATED', 'ASSIGNED', 'DELIVERED','READY TO DISPATCH');`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering manage_receiver.ejs')
+                res.render('manage_receiver.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering manage_receiver.ejs')
+                res.render('manage_receiver.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering manage_receiver.ejs')
+            res.render('manage_receiver.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+        }
+    })();
+})
+
+app.post('/set_receiver', (req, res) => {
+    
+    let id = req.body.id
+    let new_status = req.body.new_status
+    
+    let col = ''
+    if (new_status == '')
+
+    console.log('id: ' + id + ', new status: ' + new_status)
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`UPDATE [Elsa].[dbo].[Orders]
+                SET current_status = '${new_status}'
+                WHERE id = '${id}' AND receiver_id = '${req.user.id}';`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering manage_receiver.ejs')
+                res.redirect('manage_receiver.ejs')
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering manage_receiver.ejs')
+                res.redirect('manage_receiver.ejs')
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering manage_receiver.ejs')
+            res.redirect('manage_receiver.ejs')
+        }
+    })();
+    res.redirect('/manage_receiver')
+})
+
+app.get('/manage_sender', (req, res) => {
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT o.[id] as id
+                ,o.[name] as name
+                ,u1.[name] as sender_name
+                ,o.[sender_address] as sender_address
+                ,u2.[name] as receiver_name
+                ,o.[receiver_address] as receiver_address
+                ,o.[date_created] as date_created
+                ,o.[current_status] as current_status
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE [sender_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'CREATED', 'ASSIGNED', 'DELIVERED','READY TO DISPATCH ');`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering manage_sender.ejs')
+                res.render('manage_sender.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering manage_sender.ejs')
+                res.render('manage_sender.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering manage_sender.ejs')
+            res.render('manage_sender.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+        }
+    })();
+})
+
+app.post('/set_sender', (req, res) => {
+    
+    let id = req.body.id
+    let new_status = req.body.new_status
+    
+    let col = ''
+    if (new_status == '')
+
+    console.log('id: ' + id + ', new status: ' + new_status)
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`UPDATE [Elsa].[dbo].[Orders]
+                SET current_status = '${new_status}'
+                WHERE id = '${id}' AND sender_id = '${req.user.id}';`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering manage_sender.ejs')
+                res.redirect('manage_sender.ejs')
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering manage_sender.ejs')
+                res.redirect('manage_sender.ejs')
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering manage_sender.ejs')
+            res.redirect('manage_sender.ejs')
+        }
+    })();
+    res.redirect('/manage_sender')
 })
 
 app.get('/home', (req, res) => {

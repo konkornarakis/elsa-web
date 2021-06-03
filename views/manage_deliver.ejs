@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.83.1">
-    <title>Ιστορικό</title>
+    <title>Μεταφορά</title>
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -63,7 +63,7 @@
               <li><a href="#" class="nav-link px-2 link-dark">Αρχική</a></li>
               <li><a href="/create" class="nav-link px-2 link-dark">Δημιουργία</a></li>
               <li><a href="/manage_sender" class="nav-link px-2 link-dark">Αποστολές</a></li>
-              <li><a href="/manage_deliveries" class="nav-link px-2 link-dark">Μεταφορά</a></li>
+              <li><a href="/manage_deliver" class="nav-link px-2 link-dark">Μεταφορά</a></li>
               <li><a href="/manage_receiver" class="nav-link px-2 link-dark">Παραλαβές</a></li>
               <li><a href="/availability" class="nav-link px-2 link-dark">Διαθεσιμότητα</a></li>
               <li><a href="/job" class="nav-link px-2 link-secondary">Αναλαβή</a></li>
@@ -94,51 +94,55 @@
       </div>
     </header>
     <main class="container text-center">
-      <form action="/getjob" method="GET">
-        <h3>Ζήτα να αναλάβεις μια μεταφορά, πατώντας το κουμπί</h3>
-        <button class="btn btn-primary" type="submit">Ξεκίνα</button>
-      </form>
         <% if (db_conn_status === '0') { %>
-          <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-          <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>  
+        <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>  
         <% } else if (db_response.length == 0) { %>
-          <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-          <h3>Δεν βρήκαμε κάτι</h3>
+        <h3>Δεν βρήκαμε κάτι</h3>
         <% } else { %>
-          <h3>Βρήκαμε κάτι. Αναλαμβάνεις την παραγγελία με όνομα: <%= db_response[0].name %>.</h3>
-          <table class="table">
+        <h3> Διαχείριση παραγγελιών</h3>
+        <table class="table">
             <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Όνομα παραγγελίας</th>
-                <th scope="col">Ημ/νία δημιουργίας</th>
-                <th scope="col">Κατάσταση</th>
-    
-                <th scope="col">Ον/νυμο αποστολέα</th>
-                <th scope="col">Δ/νση αποστολέα</th>
-                <th scope="col">Ον/νυμο παραλήπτη</th>
-                <th scope="col">Δ/νση παραλήπτη</th>
-              </tr>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Όνομα παραγγελίας</th>
+                    <th scope="col">Ημ/νία δημιουργίας</th>
+                    <th scope="col">Κατάσταση</th>
+
+                    <th scope="col">Ον/νυμο αποστολέα</th>
+                    <th scope="col">Δ/νση αποστολέα</th>
+                    <th scope="col">Ον/νυμο παραλήπτη</th>
+                    <th scope="col">Δ/νση παραλήπτη</th>
+                    <th>Αλλαγή κατάστασης</th>
+                </tr>
             </thead>
             <tbody> 
-              <tr>  
-                <th scope="row"><%=db_response[0].id%></th>
-                <td><%= db_response[0].name %></td>
-                <td><%= db_response[0].date_created %></td>
-                <td><%= db_response[0].current_status %></td>
-                <td><%= db_response[0].sender_name %></td>
-                <td><%= db_response[0].sender_address %></td>
-                <td><%= db_response[0].receiver_name %></td>
-                <td><%= db_response[0].receiver_address %></td>
-              </tr>
+                <% for (let i = 0; i < db_response.length; i++) { %>
+                <tr>  
+                    <th scope="row"><%=db_response[i].id%></th>
+                    <td><%= db_response[i].name %></td>
+                    <td><%= (new Date(db_response[0].date_created)).toISOString().slice(0, 16) %></td>
+                    <td><%= db_response[i].current_status %></td>
+                    <td><%= db_response[i].sender_name %></td>
+                    <td><%= db_response[i].sender_address %></td>
+                    <td><%= db_response[i].receiver_name %></td>
+                    <td><%= db_response[i].receiver_address %></td>
+                    <td>
+                        <form class="form" action="/set_deliver" method="POST">
+                            <input type="text" value="<%= db_response[i].id %>" name="id" class="invisible">
+                            <select onchange="this.form.submit()" class="form-select" name="new_status" aria-label="Default select example">
+                                <option value="ON TRANSIT" <% if (db_response[i].current_status == 'ON TRANSIT') {%> selected <% } %>>ON TRANSIT</option>
+                                <option value="OUT FOR DELIVERY" <% if (db_response[i].current_status == 'OUT FOR DELIVERY') {%> selected <% } %>>OUT FOR DELIVERY</option>
+                                <option value="DELIVERED" <% if (db_response[i].current_status == 'DELIVERED') {%> selected <% } %>>DELIVERED</option>
+                                <option value="CANCELED" <% if (db_response[i].current_status == 'CANCELED') {%> selected <% } %>>CANCELED</option>
+                                <option value="ALERT" <% if (db_response[i].current_status == 'ALERT') {%> selected <% } %>>ALERT</option>
+                                <button class="btn btn-primary"></button>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
             </tbody>
-          </table>
+        </table>
         <% } %>
     </main>
   </body>

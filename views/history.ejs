@@ -59,12 +59,15 @@
         <div id="navbar" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
   
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
-                <li><a href="/" class="nav-link px-2 link-dark">Overview</a></li>
-                <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
-                <li><a href="/availability" class="nav-link px-2 link-dark">Availability</a></li>
-                <li><a href="#" class="nav-link px-2 link-secondary">History</a></li>
-                <li><a href="/job" class="nav-link px-2 link-dark">Job</a></li>
+              <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
+              <li><a href="/" class="nav-link px-2 link-dark">Αρχική</a></li>
+              <li><a href="/create" class="nav-link px-2 link-dark">Δημιουργία</a></li>
+              <li><a href="/manage_sender" class="nav-link px-2 link-dark">Αποστολές</a></li>
+              <li><a href="/manage_deliver" class="nav-link px-2 link-dark">Μεταφορά</a></li>
+              <li><a href="/manage_receiver" class="nav-link px-2 link-dark">Παραλαβές</a></li>
+              <li><a href="/availability" class="nav-link px-2 link-dark">Διαθεσιμότητα</a></li>
+              <li><a href="/job" class="nav-link px-2 link-dark">Αναλαβή</a></li>
+              <li><a href="/history" class="nav-link px-2 link-secondary">Ιστορικό</a></li>
                 <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
             </ul>
   
@@ -92,7 +95,7 @@
     </header>
     <main class="container text-center">
       <p>
-        <h1>Orders you created</h1>
+        <h1>Παραγγελίες που είσαι ο αποστολέας τους</h1>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCreated" aria-expanded="false" aria-controls="collapseExample">
           εμφάνιση/απόκρυψη
         </button>
@@ -120,7 +123,7 @@
                 <tr>  
                   <th scope="row"><%= i+1 %></th>
                   <td><%= created[i].name %></td>
-                  <td><%= created[i].date_created %></td>
+                  <td><%= (new Date(created[i].date_created)).toISOString().slice(0, 16) %></td>
                   <td><%= created[i].current_status %></td>
                   <td><%= created[i].sender_name %></td>
                   <td><%= created[i].sender_address %></td>
@@ -135,7 +138,7 @@
       </div>
       
       <p>
-        <h1>Orders you received</h1>
+        <h1>Παρραγελίες που είσαι ο παραλήπτης τους</h1>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReceived" aria-expanded="false" aria-controls="collapseExample">
           εμφάνιση/απόκρυψη
         </button>
@@ -163,7 +166,7 @@
                 <tr>  
                   <th scope="row"><%= i+1 %></th>
                   <td><%= received[i].name %></td>
-                  <td><%= received[i].date_created %></td>
+                  <td><%= (new Date(received[i].date_created)).toISOString().slice(0, 16) %></td>
                   <td><%= received[i].current_status %></td>
                   <td><%= received[i].sender_name %></td>
                   <td><%= received[i].sender_address %></td>
@@ -178,7 +181,7 @@
       </div>
 
       <p>
-        <h1>Orders you delivered</h1>
+        <h1>Παραγγελίες που είσαι ο μεταφορέας τους</h1>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivered" aria-expanded="false" aria-controls="collapseExample">
           εμφάνιση/απόκρυψη
         </button>
@@ -205,7 +208,7 @@
                 <tr>  
                   <th scope="row"><%= i+1 %></th>
                   <td><%= delivered[i].name %></td>
-                  <td><%= delivered[i].date_created %></td>
+                  <td><%= (new Date(delivered[i].date_created)).toISOString().slice(0, 16) %></td>
                   <td><%= delivered[i].current_status %></td>
                   <td><%= delivered[i].sender_name %></td>
                   <td><%= delivered[i].sender_address %></td>
@@ -219,5 +222,155 @@
         </div>
       </div>
     </main>
+    <footer class="bg-dark text-center text-white mb-0 mt-5">
+      <!-- Grid container -->
+      <div class="container p-4">
+        <!-- Section: Social media -->
+        <section class="mb-4">
+          <!-- Facebook -->
+          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fa fa-facebook-square" aria-hidden="true"></i>
+          </a>
+
+          <!-- Twitter -->
+          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fa fa-twitter"></i
+          ></a>
+
+          <!-- Google -->
+          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fa fa-google"></i
+          ></a>
+
+          <!-- Instagram -->
+          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fa fa-instagram"></i
+          ></a>
+
+          <!-- Linkedin -->
+          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fa fa-linkedin"></i
+          ></a>
+
+          <!-- Github -->
+          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fa fa-github"></i
+          ></a>
+        </section>
+        <!-- Section: Social media -->
+
+        <!-- Section: Form -->
+        <section class="">
+          <form action="">
+            <!--Grid row-->
+            <div class="row d-flex justify-content-center">
+              <!--Grid column-->
+              <div class="col-auto">
+                <p class="pt-2">
+                  <strong>Εγγραφείτε για ενημερωτικά email</strong>
+                </p>
+              </div>
+              <!--Grid column-->
+
+              <!--Grid column-->
+              <div class="col-md-5 col-12">
+                <!-- Email input -->
+                <div class="form-outline form-white mb-4">
+                  <input type="email" id="form5Example2" class="form-control" />
+                  <label class="form-label" for="form5Example2">Διεύθυνση email</label>
+                </div>
+              </div>
+              <!--Grid column-->
+
+              <!--Grid column-->
+              <div class="col-auto">
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-outline-light mb-4">
+                  Εγγραφή
+                </button>
+              </div>
+              <!--Grid column-->
+            </div>
+            <!--Grid row-->
+          </form>
+        </section>
+        <!-- Section: Form -->
+
+        <!-- Section: Text -->
+        <section class="mb-4">
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
+            repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
+            eum harum corrupti dicta, aliquam sequi voluptate quas.
+          </p>
+        </section>
+        <!-- Section: Text -->
+
+        <!-- Section: Links -->
+        <section class="">
+          <!--Grid row-->
+          <div class="row">
+            <!--Grid column-->
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+              <h5 class="text-uppercase">Links</h5>
+
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <a href="#!" class="text-white">Link 1</a>
+                </li>
+              </ul>
+            </div>
+            <!--Grid column-->
+
+            <!--Grid column-->
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+              <h5 class="text-uppercase">Links</h5>
+
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <a href="#!" class="text-white">Link 1</a>
+                </li>
+              </ul>
+            </div>
+            <!--Grid column-->
+
+            <!--Grid column-->
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+              <h5 class="text-uppercase">Links</h5>
+
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <a href="#!" class="text-white">Link 1</a>
+                </li>
+              </ul>
+            </div>
+            <!--Grid column-->
+
+            <!--Grid column-->
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+              <h5 class="text-uppercase">Links</h5>
+
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <a href="#!" class="text-white">Link 1</a>
+                </li>
+              </ul>
+            </div>
+            <!--Grid column-->
+          </div>
+          <!--Grid row-->
+        </section>
+        <!-- Section: Links -->
+      </div>
+      <!-- Grid container -->
+
+      <!-- Copyright -->
+      <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+        © 2020 Copyright:
+        <a class="text-white" href="/home">elsa.com</a>
+      </div>
+      <!-- Copyright -->
+    </footer>
+    <!-- Footer -->
   </body>
 </html> 

@@ -86,28 +86,28 @@
         <main class="form-signin">
             <form action="/register" method="POST">
                 <img class="mb-4" src="/views/resources/logo.svg" alt="" width="72" height="57">
-                <h1 class="h3 mb-3 fw-normal">Please register</h1>
+                <h1 class="h3 mb-3 fw-normal">Εγγραφή</h1>
                 
                 <div class="form-floating m-2">
                     <input type="text" class="form-control" id="name" placeholder="Γιώργος Γεωργίου" name="name">
-                    <label for="name">Name</label>
+                    <label for="name">Όνατεπώνυμο</label>
                 </div>
                 <div class="form-floating m-2">
                     <input type="email" class="form-control" id="email" placeholder="name@example.com" name="email">
-                    <label for="email">Email address</label>
+                    <label for="email">Διεύθυνση email</label>
                 </div>
                 <div class="form-floating m-2">
                     <input type="password" class="form-control" id="password" placeholder="Password" name="password">
-                    <label for="password">Password</label>
+                    <label for="password">Κωδικός πρόσβασης</label>
                 </div>
 
                 <div class="checkbox mb-3">
                     <label>
-                        <input type="checkbox" value="remember-me"> Remember me
+                        <input type="checkbox" value="remember-me"> Θυμήσου με
                     </label>
                 </div>
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Register</button>
-                <a href="/login">I already have an account</a> 
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Εγγραφή</button>
+                <a href="/login">Έχω ήδη λογαριασμό</a> 
                 <p class="mt-5 mb-3 text-muted">© 2021</p>
             </form>
             <% if (messages.error) { %>

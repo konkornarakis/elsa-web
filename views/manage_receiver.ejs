@@ -60,13 +60,14 @@
   
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
-                <li><a href="/" class="nav-link px-2 link-dark">Overview</a></li>
-                <li><a href="/create" class="nav-link px-2 link-dark">Create</a></li>
-                <li><a href="/availability" class="nav-link px-2 link-dark">Availability</a></li>
-                <li><a href="/history" class="nav-link px-2 link-dark">History</a></li>
-                <li><a href="/job" class="nav-link px-2 link-dark">Job</a></li>
-                <li><a href="/deliver" class="nav-link px-2 link-secondary">Μεταφορά</a></li>
-
+                <li><a href="#" class="nav-link px-2 link-dark">Αρχική</a></li>
+                <li><a href="/create" class="nav-link px-2 link-dark">Δημιουργία</a></li>
+                <li><a href="/manage_sender" class="nav-link px-2 link-dark">Αποστολές</a></li>
+                <li><a href="/manage_deliver" class="nav-link px-2 link-dark">Μεταφορά</a></li>
+                <li><a href="/manage_receiver" class="nav-link px-2 link-secondary">Παραλαβές</a></li>
+                <li><a href="/availability" class="nav-link px-2 link-dark">Διαθεσιμότητα</a></li>
+                <li><a href="/job" class="nav-link px-2 link-dark">Αναλαβή</a></li>
+                <li><a href="/history" class="nav-link px-2 link-dark">Ιστορικό</a></li>
                 <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
             </ul>
   
@@ -93,12 +94,53 @@
       </div>
     </header>
     <main class="container text-center">
-      <form action="/getjob" method="GET">
-        <h3>Ζήτα να αναλάβεις μια μεταφορά, πατώντας το κουμπί</h3>
-        <button type="submit">Ξεκίνα</button>
-      </form>
-     
-      </table>
+        <% if (db_conn_status === '0') { %>
+        <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>  
+        <% } else if (db_response.length == 0) { %>
+        <h3>Δεν βρήκαμε κάτι</h3>
+        <% } else { %>
+        <h3> Διαχείριση παραγγελιών</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Όνομα παραγγελίας</th>
+                    <th scope="col">Ημ/νία δημιουργίας</th>
+                    <th scope="col">Κατάσταση</th>
+
+                    <th scope="col">Ον/νυμο αποστολέα</th>
+                    <th scope="col">Δ/νση αποστολέα</th>
+                    <th scope="col">Ον/νυμο παραλήπτη</th>
+                    <th scope="col">Δ/νση παραλήπτη</th>
+                    <th>Αλλαγή κατάστασης</th>
+                </tr>
+            </thead>
+            <tbody> 
+                <% for (let i = 0; i < db_response.length; i++) { %>
+                <tr>  
+                    <th scope="row"><%=db_response[i].id%></th>
+                    <td><%= db_response[i].name %></td>
+                    <td><%= (new Date(db_response[0].date_created)).toISOString().slice(0, 16) %></td>
+                    <td><%= db_response[i].current_status %></td>
+                    <td><%= db_response[i].sender_name %></td>
+                    <td><%= db_response[i].sender_address %></td>
+                    <td><%= db_response[i].receiver_name %></td>
+                    <td><%= db_response[i].receiver_address %></td>
+                    <td>
+                        <form class="form" action="/set_receiver" method="POST">
+                            <input type="text" value="<%= db_response[i].id %>" name="id" class="invisible">
+                            <select onchange="this.form.submit()" class="form-select" name="new_status" aria-label="Default select example">
+                                <option value="ON TRANSIT" <% if (db_response[i].current_status != 'DELIVERED') {%> selected <% } %>>NOT DELIVERED</option>
+                                <option value="DELIVERED" <% if (db_response[i].current_status == 'DELIVERED') {%> selected <% } %>>DELIVERED</option>
+                                <button class="btn btn-primary"></button>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <% } %>
     </main>
   </body>
 </html> 
