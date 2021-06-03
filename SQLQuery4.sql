@@ -35,7 +35,6 @@ BEGIN
 END
 
 -- test data etc
-
 delete from Orders
 delete from Tracking
 delete from import
@@ -43,7 +42,7 @@ delete from import
 delete from orders where id ='43'
 
 select * from orders
-select * from Tracking
+select * from tracking
 select * from import
 
 update import set deliver_id = NULL where deliver_id = 'NULL'
@@ -64,4 +63,19 @@ insert into Orders values('23', 'sql', '2', 'address', '3', 'address2', NULL, '2
 insert into Orders values('31', 'sql', '3', 'address', '1', 'address2', NULL, '2021-06-03 16:29:56.997', 'CREATED', '2021-06-03 16:29:56.997', '0', '0');
 insert into Orders values('32', 'sql', '3', 'address', '2', 'address2', NULL, '2021-06-03 16:29:56.997', 'CREATED', '2021-06-03 16:29:56.997', '0', '0');
 
--- telos test data
+
+
+
+
+insert into Orders values('200', 'sql-test', '2', 'address', '3', 'address2', NULL, '2021-06-19 16:29:56.997', 'CREATED', '2021-06-03 16:29:56.997', '0', '0');
+
+UPDATE [Elsa].[dbo].[Orders]
+                SET deliver_id = '1'
+                WHERE id = '200';
+
+select * from orders where id = '200';
+
+insert into Orders values('200', 'sql-test', '2', 'address', '3', 'address2', NULL, '2021-06-19 16:29:56.997', 'CREATED', '2021-06-03 16:29:56.997', '0', '0');
+
+delete from orders where id = '200';
+delete  from tracking where id = '200';
