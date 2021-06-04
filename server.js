@@ -160,12 +160,12 @@ app.get('/availability', checkAuthenticated, (req, res) => {
             db_response = db_response.recordset
             console.log(db_response)
 
-            res.render('availability.ejs', { name:req.user.name, response:'', db_response:db_response, db_conn_status:'1' })
+            res.render('availability.ejs', { name:req.user.name, response:'', db_response:db_response, db_conn_status:'1', post_req_db_conn_status: '', post_req_response: ''})
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
             console.log('rendering getjob.ejs')
-            res.render('availability.ejs', { name:req.user.name, response:'Failed to connect with the database', db_response:[], db_conn_status:'0' })
+            res.render('availability.ejs', { name:req.user.name, response:'Failed to connect with the database', db_response:[], db_conn_status:'0', post_req_db_conn_status: '', post_req_response: ''})
         }
     })();
 })
@@ -281,11 +281,11 @@ app.get('/history', checkAuthenticated, (req, res) => {
             console.log(received)
             console.log(delivered)
             console.log('done printing results')
-            res.render('history.ejs', { created: created, received: received, delivered: delivered  })
+            res.render('history.ejs', { created: created, received: received, delivered: delivered, db_conn_status:'1'})
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
-            res.render('history.ejs', { created: 'error', received: 'error', delivered: 'error'  })
+            res.render('history.ejs', { created: 'error', received: 'error', delivered: 'error', db_conn_status:'0'  })
         }
         // res.render('history.ejs', { created: created, received: received, delivered: delivered  })
     })();

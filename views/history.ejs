@@ -94,6 +94,7 @@
       </div>
     </header>
     <main class="container text-center">
+      <% if (db_conn_status == '1') { %>
       <p>
         <h1>Παραγγελίες που είσαι ο αποστολέας τους</h1>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCreated" aria-expanded="false" aria-controls="collapseExample">
@@ -221,6 +222,11 @@
           </table>
         </div>
       </div>
+      <% } else { %>
+      <div class="container">
+        <h2>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h2>
+      </div>
+      <% } %>
     </main>
     <footer class="bg-dark text-center text-white mb-0 mt-5">
       <!-- Grid container -->

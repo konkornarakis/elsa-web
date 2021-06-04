@@ -84,12 +84,12 @@
               <img src="/views/resources/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
             </a>
             <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Settings</a></li>
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Profile</a></li>
+              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Ρυθμίσεις</a></li>
+              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Προφίλ</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/logout?_method=DELETE" method="POST">
-                  <button class="dropdown-item" type="submit">Log out</button>
+                  <button class="dropdown-item" type="submit">Αποσύνδεση</button>
                 </form>
               </li> 
             </ul>
@@ -100,44 +100,61 @@
     <div class="container text-center p-5">
       <main class="form-signin">
         <h1 class="p-3">Καταχώρηση διαθεσιμότητας</h1>
-        <form class="p-3" name="availabilityForm" id="availabilityForm" action="/availability" method="POST" onsubmit="return validateForm()">
+        <!-- <form class="p-3" name="availabilityForm" id="availabilityForm" action="/availability" method="POST" onsubmit="return validateForm()">
             <label for="datetime-availability-start">Start (date and time):</label>
             <input type="datetime-local" id="datetime-availability-start" name="availabilityStart">
             <label for="datetime-availability-end">End (date and time):</label>
             <input type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
             <button class="btn btn-primary" type="submit">Submit</button>
+        </form> -->
+        <form class="p-3" name="availabilityForm" id="availabilityForm" action="/availability" method="POST" onsubmit="return validateForm()">
+          <div class="row m-3 justify-content-center">
+            <label class="col-3" for="datetime-availability-start">Αρχή διαθεσιμότητας:</label>
+            <input class="col-3" type="datetime-local" id="datetime-availability-start" name="availabilityStart">
+          </div>
+          <div class="row m-3 justify-content-center">
+            <label class="col-3" for="datetime-availability-end">Τέλος διαθεσιμότητας:</label>
+            <input class="col-3" type="datetime-local" id="datetime-availability-end" name="availabilityEnd">
+          </div>
+          <div class="row m-3 justify-content-center">
+            <button class="col-2 btn btn-primary" type="submit">Υποβολή</button>
+          </div>
         </form>
-        <%= response %>
+        <% if (post_req_db_conn_status == '1') { %>
+          <%= post_req_response %>
+        <% } else if (post_req_db_conn_status == '0') { %>
+          <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>
+        <% } %>
         <div class="p-3">
-            <h1>Σύνοψη διαθεσιμότητας</h1>
-            <% if(db_conn_status == '1') { %>
-              <% if(db_response.length == 0) { %>
-                <h3>Δεν υπάρχουν δεδομένα προς εμφάνιση.</h3>
-              <% } else { %>
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Start time</th>
-                      <th scope="col">End time</th>
-                    </tr>
-                  </thead>
-                  <tbody> 
-                    <% for(let i = 0; i<db_response.length; i++) {%>
-                      <tr>  
-                        <th scope="row"><%= i+1 %></th>
-                        <td><%= (new Date(db_response[0].start_time)).toISOString().slice(0, 16) %></td>
-                        <td><%= (new Date(db_response[0].end_time)).toISOString().slice(0, 16) %></td>
-                      </tr>
-                    <% } %>
-                  </tbody>
-                </table>
-              <% } %>
-            <% } else if (db_conn_status == '0') { %>
-              <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>
-            <%} else { %>
-              <h3>Άγνωστο σφάλμα.</h3> 
-            <% } %>
+         <h1>Σύνοψη διαθεσιμότητας</h1>
+          <% if(db_conn_status == '1') { %>
+          <% if(db_response.length == 0) { %>
+            <h3>Δεν υπάρχουν δεδομένα προς εμφάνιση.</h3>
+          <% } else { %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Αρχή διαθεσιμότητας</th>
+                  <th scope="col">Τέλος διαθεσιμότητας</th>
+                </tr>
+              </thead>
+              <tbody> 
+                <% for(let i = 0; i<db_response.length; i++) {%>
+                  <tr>  
+                    <th scope="row"><%= i+1 %></th>
+                    <td><%= (new Date(db_response[0].start_time)).toISOString().slice(0, 16) %></td>
+                    <td><%= (new Date(db_response[0].end_time)).toISOString().slice(0, 16) %></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          <% } %>
+        <% } else if (db_conn_status == '0') { %>
+          <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>
+        <%} else { %>
+          <h3>Άγνωστο σφάλμα.</h3> 
+        <% } %>
             
         </div>
       </main>
