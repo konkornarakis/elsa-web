@@ -94,7 +94,125 @@
       </div>
     </header>
     <main class="container text-center">
+<<<<<<< HEAD
       <% if (db_conn_status == '1') { %>
+=======
+      <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="card card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Order name</th>
+                    <th scope="col">Time created</th>
+                    <th scope="col">Status</th>
+        
+                    <th scope="col">Sender name</th>
+                    <th scope="col">Sender address</th>
+                    <th scope="col">Receiver name</th>
+                    <th scope="col">Receiver address</th>
+                    <th scope="col">Delivery name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%=  %> 
+                  <% for(let i = 0; i<created.length; i++) {%>
+                    <tr>  
+                      <th scope="row"><%= created[i].id %></th>
+                      <td><%= created[i].name %></td>
+                      <td><%= (new Date(created[i].date_created)).toISOString().slice(0, 16) %></td>
+                      <td><%= created[i].current_status %></td>
+                      <td><%= created[i].sender_name %></td>
+                      <td><%= created[i].sender_address %></td>
+                      <td><%= created[i].receiver_name %></td>
+                      <td><%= created[i].receiver_address %></td>
+                      <td><%= created[i].deliver_name %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+          </div>
+          <div class="carousel-item">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Order name</th>
+                  <th scope="col">Time created</th>
+                  <th scope="col">Status</th>
+      
+                  <th scope="col">Sender name</th>
+                  <th scope="col">Sender address</th>
+                  <th scope="col">Receiver name</th>
+                  <th scope="col">Receiver address</th>
+                  <th scope="col">Delivery name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%=  %> 
+                <% for(let i = 0; i<created.length; i++) {%>
+                  <tr>  
+                    <th scope="row"><%= created[i].id %></th>
+                    <td><%= created[i].name %></td>
+                    <td><%= (new Date(created[i].date_created)).toISOString().slice(0, 16) %></td>
+                    <td><%= created[i].current_status %></td>
+                    <td><%= created[i].sender_name %></td>
+                    <td><%= created[i].sender_address %></td>
+                    <td><%= created[i].receiver_name %></td>
+                    <td><%= created[i].receiver_address %></td>
+                    <td><%= created[i].deliver_name %></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+          <div class="carousel-item">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Order name</th>
+                  <th scope="col">Time created</th>
+                  <th scope="col">Status</th>
+      
+                  <th scope="col">Sender name</th>
+                  <th scope="col">Sender address</th>
+                  <th scope="col">Receiver name</th>
+                  <th scope="col">Receiver address</th>
+                  <th scope="col">Delivery name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%=  %> 
+                <% for(let i = 0; i<created.length; i++) {%>
+                  <tr>  
+                    <th scope="row"><%= created[i].id %></th>
+                    <td><%= created[i].name %></td>
+                    <td><%= (new Date(created[i].date_created)).toISOString().slice(0, 16) %></td>
+                    <td><%= created[i].current_status %></td>
+                    <td><%= created[i].sender_name %></td>
+                    <td><%= created[i].sender_address %></td>
+                    <td><%= created[i].receiver_name %></td>
+                    <td><%= created[i].receiver_address %></td>
+                    <td><%= created[i].deliver_name %></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+>>>>>>> c8666168b2ec026c505c837e5e19394aead3ae47
       <p>
         <h1>Παραγγελίες που είσαι ο αποστολέας τους</h1>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCreated" aria-expanded="false" aria-controls="collapseExample">
