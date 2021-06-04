@@ -650,7 +650,7 @@ app.get('/tracking/:id', (req, res) => {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
             db_response = await pool.request()
-                .query(`SELECT [id], [status], [datetime], [comment]
+                .query(`SELECT [id], [status], [datetime], [comment], (SELECT TOP 1 [name] FROM [Elsa].[dbo].[Orders] WHERE [id]='${req.params.id}') AS name
                 FROM [Elsa].[dbo].[Tracking] WHERE [id] = '${req.params.id}';`)
             
             console.log('sql results: ')
