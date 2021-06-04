@@ -102,12 +102,13 @@
                 <% } else if (db_response.length == 0) { %>
                 <h3>Δεν βρήκαμε κάτι</h3>
                 <% } else { %>
-                <h3> Διαχείριση παραγγελιών</h3>
+                <h3>Παρακολούθηση παραγγελίας</h3>
+                <h3>ID παραγγελίας: <%=db_response[0].id%></h3>
+                <h4>Όνομα παραγγελίας: <%=db_response[0].name%></h3>
                 <table class="table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Όνομα παραγγελίας</th>
                             <th scope="col">Κατάσταση</th>
                             <th scope="col">Ημ/νία</th>
                             <th scope="col">Σχόλιο</th>
@@ -116,8 +117,7 @@
                     <tbody> 
                         <% for (let i = 0; i < db_response.length; i++) { %>
                         <tr>  
-                            <th scope="row"><%=db_response[i].id%></th>
-                            <td>Όνομα παραγγελίας</td>
+                            <th scope="row"><%= i + 1%></th>
                             <td><%= db_response[i].status %></td>
                             <td><%= (new Date(db_response[0].datetime)).toISOString().slice(0, 16) %></td>
                             <td><%= db_response[i].comment %></td>
