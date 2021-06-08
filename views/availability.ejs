@@ -121,9 +121,9 @@
           </div>
         </form>
         <% if (post_req_db_conn_status == '1') { %>
-          <%= post_req_response %>
+          <h3><%= post_req_db_response %></h3>
         <% } else if (post_req_db_conn_status == '0') { %>
-          <h3>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h3>
+          <h3><%= post_req_db_response %></h3>
         <% } %>
         <div class="p-3">
          <h1>Σύνοψη διαθεσιμότητας</h1>
@@ -135,16 +135,29 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">id</th>
                   <th scope="col">Αρχή διαθεσιμότητας</th>
                   <th scope="col">Τέλος διαθεσιμότητας</th>
+                  <th scope="col">Ενέργεια</th>
                 </tr>
               </thead>
               <tbody> 
                 <% for(let i = 0; i<db_response.length; i++) {%>
                   <tr>  
                     <th scope="row"><%= i+1 %></th>
-                    <td><%= (new Date(db_response[0].start_time)).toISOString().slice(0, 16) %></td>
-                    <td><%= (new Date(db_response[0].end_time)).toISOString().slice(0, 16) %></td>
+                    <td><%= db_response[i].id %></td>
+                    <td><%= (new Date(db_response[i].start_time)).toISOString().slice(0, 16) %></td>
+                    <td><%= (new Date(db_response[i].end_time)).toISOString().slice(0, 16) %></td>
+                    <td>
+                      <form action="/delete_availability" method="POST">
+                        <div class="d-none">
+                          <input name="id" type="text" value="<%= db_response[i].id %>">
+                          <input name="start_time" type="text" value="<%= db_response[i].start_time %>">
+                          <input name="end_time" type="text" value="<%= db_response[i].end_time %>">
+                        </div>
+                        <button style="border:none; background: none;"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                      </form>
+                    </td>
                   </tr>
                 <% } %>
               </tbody>

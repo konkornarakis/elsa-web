@@ -48,6 +48,7 @@ app.use(methodOverride('_method'))
 var sql = require('mssql');
 const { create } = require('domain');
 const { response } = require('express');
+const { get } = require('jquery');
 
 var sqlConfig = {
     user: 'elsa',
@@ -153,7 +154,8 @@ app.get('/availability', checkAuthenticated, (req, res) => {
             let pool = await sql.connect(sqlConfig)
             db_response = await pool.request()
                 .query(`SELECT
-                        [start_time]
+                        [id]
+                        ,[start_time]
                         ,[end_time]
                         FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time]`)
             
@@ -165,14 +167,13 @@ app.get('/availability', checkAuthenticated, (req, res) => {
             console.log(err);
             console.log('FAILURE')
             console.log('rendering getjob.ejs')
-            res.render('availability.ejs', { name:req.user.name, response:'Failed to connect with the database', db_response:[], db_conn_status:'0', post_req_db_conn_status: '', post_req_response: ''})
+            res.render('availability.ejs', { post_req_db_response: '', post_req_db_conn_status: '1', db_response:[], db_conn_status:'0'})
         }
     })();
 })
 
 app.post('/availability',checkAuthenticated, (req, res) => {
     let name = req.user.name
-    let response = ''
 
     let newStart = req.body.availabilityStart + ':00.000Z'
     let newEnd = req.body.availabilityEnd + ':00.000Z'
@@ -182,62 +183,112 @@ app.post('/availability',checkAuthenticated, (req, res) => {
     console.log("current_date: " + current_date + ", new start: " + newStart + ", new end: " + newEnd)
 
 
-        let db_response = '';
-        (async function () {
-            try {
-                console.log("sql connecting...")
-                let pool = await sql.connect(sqlConfig)
-                db_response = await pool.request()
-                    .query(`SELECT
-                            [start_time]
-                            ,[end_time]
-                            FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time] ASC;`)
-                
-                db_response = db_response.recordset
-                console.log(db_response)
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
 
-                if (!(current_date < newStart && current_date < newEnd)) {
-                    response = 'Fail. Dates must be in future.'
-                    console.log('Dates must be in future.')
-                    res.render('availability.ejs', {name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
+            let post_req_db_response = ''
+            
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT
+                        [id]
+                        ,[start_time]
+                        ,[end_time]
+                        FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time] ASC;`)
+            
+            db_response = db_response.recordset
+            console.log(db_response)
+
+
+            if (!(current_date < newStart && current_date < newEnd)) {
+                console.log('Η ημερομηνίες πρέπει να ανήκουν στο μέλλον.')
+                res.render('availability.ejs', {post_req_db_response: 'Η ημερομηνίες πρέπει να ανήκουν στο μέλλον.', post_req_db_conn_status: '1', 
+                db_response:db_response, db_conn_status:'1'})
+                return
+            }
+
+            for (let i = 0; i < db_response.length; i++) {
+                console.log('newStart: ' + newStart + ', newEnd: ' + newEnd + ', db start_time: ' + ((new Date(db_response[i].start_time)).toISOString()) + ', db end_time: ' + ((new Date(db_response[i].end_time)).toISOString()))
+
+                console.log(current_date < newEnd)
+                if (newStart < ((new Date(db_response[i].end_time)).toISOString()) && newStart > ((new Date(db_response[i].start_time)).toISOString())) {
+                    post_req_db_response = 'Αποτυχία. Η ημ/νία έναρξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
+                    console.log(response)
+                    res.render('availability.ejs', { post_req_db_response:post_req_db_response, post_req_db_conn_status:'1', db_response:db_response, db_conn_status:'1'})
+                    return
+                } else if (newStart < ((new Date(db_response[i].start_time)).toISOString()) && newEnd > ((new Date(db_response[i].end_time)).toISOString())) {
+                    post_req_db_response = 'Αποτυχία. Η ημ/νία λήξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
+                    console.log(response)
+                    res.render('availability.ejs', { post_req_db_response:post_req_db_response, post_req_db_conn_status:'1', db_response:db_response, db_conn_status:'1'})
                     return
                 }
-
-                response = 'Όλα φαίνονται καλά. Έγινε καταχώρηση.'
-    
-                for (let i = 0; i < db_response.length; i++) {
-                    console.log('newStart: ' + newStart + ', newEnd: ' + newEnd + ', db start_time: ' + ((new Date(db_response[i].start_time)).toISOString()) + ', db end_time: ' + ((new Date(db_response[i].end_time)).toISOString()))
-
-                    console.log(current_date < newEnd)
-                    if (newStart < ((new Date(db_response[i].end_time)).toISOString()) && newStart > ((new Date(db_response[i].start_time)).toISOString())) {
-                        response = 'Αποτυχία. Η ημ/νία έναρξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
-                        console.log(response)
-                        res.render('availability.ejs', { name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
-                        return
-                    } else if (newStart < ((new Date(db_response[i].start_time)).toISOString()) && newEnd > ((new Date(db_response[i].end_time)).toISOString())) {
-                        response = 'Αποτυχία. Η ημ/νία λήξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
-                        console.log(response)
-                        res.render('availability.ejs', { name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
-                        return
-                    }
-                }
-
-                let db_response2 = ''
-                console.log('inserting availability')
-                db_response2 = await pool.request()
-                    .query(`INSERT INTO [Elsa].[dbo].[Availability]
-                    values('${uuidv4()}', '${req.user.id}', '${newStart}', '${newEnd}');`)
-
-                console.log('done inserting availability')
-                // res.render('availability.ejs', { name:req.user.name, response:response, db_response:db_response, db_conn_status:'1'})
-                res.redirect('/availability')
-            } catch (err) {
-                console.log(err);
-                console.log('FAILURE')
-                console.log('rendering getjob.ejs')
-                res.render('availability.ejs', { name:req.user.name, response: 'Αποτυχία επικοινωνίας με την βάση δεδομένων μας.', db_response:[], db_conn_status:'0'})
             }
-        })();
+
+            let db_response2 = ''
+            db_response2 = await pool.request()
+                .query(`INSERT INTO [Elsa].[dbo].[Availability]
+                values('${uuidv4()}', '${req.user.id}', '${newStart}', '${newEnd}');`)
+            post_req_db_response = 'Επιτυχία. Η διαθεσιμότητα καταχωρήθηκε.'
+
+            console.log('done inserting availability')
+
+            pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT
+                        [id]
+                        ,[start_time]
+                        ,[end_time]
+                        FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time] ASC;`)
+            
+            db_response = db_response.recordset
+            console.log(db_response)
+
+            res.render('availability.ejs', { post_req_db_response:post_req_db_response, post_req_db_conn_status:'1', db_response:db_response, db_conn_status:'1'})
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering getjob.ejs')
+            res.render('availability.ejs', { post_req_db_response: 'Αποτυχία επικοινωνίας με την βάση δεδομένων μας.', post_req_db_conn_status: '0' , db_response:[], db_conn_status:'0'})
+        }
+    })();
+})
+
+app.post('/delete_availability', (req, res) => {
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT
+                        [id]
+                        ,[start_time]
+                        ,[end_time]
+                        FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' ORDER BY [start_time] ASC;`)
+            
+            db_response = db_response.recordset
+
+            pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`DELETE 
+                        FROM [Elsa].[dbo].[Availability] WHERE [user_id] = '${req.user.id}' AND [id] = '${req.body.id}';`)
+            
+            db_response = db_response.recordset
+            console.log(db_response)
+
+
+            console.log('done inserting availability')
+            res.render('availability.ejs', { post_req_db_response:'', post_req_db_conn_status:'1', db_response:[], db_conn_status:'1'})
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering getjob.ejs')
+            res.render('availability.ejs', { post_req_db_response: 'Αποτυχία επικοινωνίας με την βάση δεδομένων μας.', post_req_db_conn_status: '0' , db_response:[], db_conn_status:'0'})
+        }
+    })();
 })
 
 app.get('/history', checkAuthenticated, (req, res) => {
@@ -681,8 +732,109 @@ app.get('/tracking/:id', (req, res) => {
     })();
 })
 
-app.get('/rate_deliver', checkAuthenticated, (req, res) => {
-    res.render('rate_deliver.ejs')
+app.get('/rate_deliver/:id&:role', checkAuthenticated, (req, res) => {
+
+    res.render('rate_deliver.ejs',
+    {
+        response: { order_id: 'order_id', deliver_id: 'deliver_id', user_id: 'user_id', user_role: 'user_role' }, 
+        db_response: 'db_response',
+        db_conn_status:'1'
+    })
+
+    console.log('GET /rate_deliver/:' + req.params.id + '&:' + req.params.role + ', from user id: ' + req.user.id + '.')
+
+    let order_id = req.params.id
+    let user_role = req.params.role
+
+    let db_response = '';
+
+    if (role = 'sender') {
+        (async function () {
+            try {
+                console.log("sql connecting...")
+                let pool = await sql.connect(sqlConfig)
+                db_response = await pool.request()
+                    .query(`SELECT [id], [order_id], [deliver_id], [reviewer_id], [user_role] , [time_submitted], [stars], [title], [comment], 
+                    [suggested]
+                    FROM [Elsa].[dbo].[Reviews] WHERE [order_id] = '${order_id}'
+                     AND [reviewer_id] = '${req.user.id}' AND [user_role] = '${user_role}';`)
+    
+                db_response = db_response.recordset
+    
+                if (db_response.length == 0) {
+                    console.log('Δεν έχει ήδη υποβληθεί κριτική για αυτή την παραγγελία.')
+
+                    res.render('rate_deliver.ejs',
+                    {
+                        response: { order_id: order_id, deliver_id: deliver_id, user_id: user_id, user_role: user_role }, 
+                        db_response: db_response,
+                        db_conn_status:'1'
+                    })
+                } else {
+                    console.log('Έχει ήδη υποβληθεί κριτική για αυτή την παραγγελία.')
+    
+                    console.log('rendering tracking.ejs')
+                    res.render('rate_deliver.ejs',
+                    {
+                        response: { order_id: order_id, deliver_id: deliver_id, user_id: user_id, user_role: user_role }, 
+                        db_response: db_response,
+                        db_conn_status:'1'
+                    })                }
+            } catch (err) {
+                console.log(err);
+                console.log('FAILURE')
+                console.log('rendering rate_deliver.ejs')
+                res.render('rate_deliver.ejs',
+                {
+                    response: { order_id: order_id, deliver_id: deliver_id, user_id: user_id, user_role: user_role }, 
+                    db_response: db_response,
+                    db_conn_status:'1'
+                })
+            }
+        })();
+    }
+})
+
+app.post('/review_deliver', (req, res) => {
+    console.log('POST /review_deliver')
+
+    let review_id = uuidv4()
+
+    let order_id = req.body.order_id
+    let deliver_id = req.body.deliver_id
+    let user_id = req.body.user_id
+    let user_role = req.body.user_role
+
+    let star = req.body.star
+    let review_title = req.body.review_title
+    let review_comment = req.body.review_comment
+    let review_suggested = req.body.review_suggested
+
+    console.log(star + ', ' + review_title + ', ' + review_comment + ', ' + review_suggested)
+
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`INSERT INTO [Elsa].[dbo].[Reviews] 
+                VALUES ('${review_id}', GETDATE(), '${order_id}', '${user_id}' 
+                ${user_role}', '${deliver_id}' '${star}', '${review_title}', 
+                '${review_comment}', '${review_suggested}');`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering rate_deliver.ejs')
+            res.render('rate_deliver.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+        }
+    })();
 })
 
 app.get('/home', (req, res) => {

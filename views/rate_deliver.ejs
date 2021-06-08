@@ -105,10 +105,9 @@
     <header class="p-3 mb-3 border-bottom">
       <div class="container">
         <div id="navbar" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-  
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
-            <li><a href="#" class="nav-link px-2 link-secondary">Αρχική</a></li>
+            <li><a href="/" class="nav-link px-2 link-secondary">Αρχική</a></li>
             <li><a href="/create" class="nav-link px-2 link-dark">Δημιουργία</a></li>
             <li><a href="/manage_sender" class="nav-link px-2 link-dark">Αποστολές</a></li>
             <li><a href="/manage_deliver" class="nav-link px-2 link-dark">Μεταφορά</a></li>
@@ -141,186 +140,71 @@
         </div>
       </div>
     </header>
-
-    <div class="text-center">
-      <main class="form-signin">
-        <div class="container d-flex justify-content-center mt-200">
-            <form class="" action="">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="stars">
-                            <input class="star star-5" id="star-5" type="radio" name="star" /> <label class="star star-5" for="star-5"></label> <input class="star star-4" id="star-4" type="radio" name="star" /> <label class="star star-4" for="star-4"></label> <input class="star star-3" id="star-3" type="radio" name="star" /> <label class="star star-3" for="star-3"></label> <input class="star star-2" id="star-2" type="radio" name="star" /> <label class="star star-2" for="star-2"></label> <input class="star star-1" id="star-1" type="radio" name="star" /> <label class="star star-1" for="star-1"></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <label for="exampleFormControlTextarea1">Τίτλος</label>
-                        <input class="form-control" id="exampleFormControlTextarea1"></textarea>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <label for="exampleFormControlTextarea1">Σχόλια</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1"></textarea>
-                    </div>
-                </div>
-            </form>
-        </div>
-      </main>
-
-      <!-- Footer -->
-      <footer class="bg-dark text-center text-white fixed-bottom">
-        <!-- Grid container -->
-        <div class="container p-4">
-          <!-- Section: Social media -->
-          <section class="mb-4">
-            <!-- Facebook -->
-            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-              ><i class="fa fa-facebook-square" aria-hidden="true"></i>
-            </a>
-
-            <!-- Twitter -->
-            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-              ><i class="fa fa-twitter"></i
-            ></a>
-
-            <!-- Google -->
-            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-              ><i class="fa fa-google"></i
-            ></a>
-
-            <!-- Instagram -->
-            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-              ><i class="fa fa-instagram"></i
-            ></a>
-
-            <!-- Linkedin -->
-            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-              ><i class="fa fa-linkedin"></i
-            ></a>
-
-            <!-- Github -->
-            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-              ><i class="fa fa-github"></i
-            ></a>
-          </section>
-          <!-- Section: Social media -->
-
-          <!-- Section: Form -->
-          <section class="">
-            <form action="">
-              <!--Grid row-->
-              <div class="row d-flex justify-content-center">
-                <!--Grid column-->
-                <div class="col-auto">
-                  <p class="pt-2">
-                    <strong>Εγγραφείτε για ενημερωτικά email</strong>
-                  </p>
-                </div>
-                <!--Grid column-->
-
-                <!--Grid column-->
-                <div class="col-md-5 col-12">
-                  <!-- Email input -->
-                  <div class="form-outline form-white mb-4">
-                    <input type="email" id="form5Example2" class="form-control" />
-                    <label class="form-label" for="form5Example2">Διεύθυνση email</label>
+    <main class="container text-center form-signin">
+      <% if (db_conn_status == '1') { %>
+        <% if (db_response == '0') { %>
+          <h2>Έχει ήδη υποβληθεί κριτική για αυτή τη παραγγελια.</h2>
+        <% } else { %>
+          <h2>Αξιολόγηση εμπειρίας.</h2>
+        <% } %>
+      <% } else { %>
+        <h2>Αποτυχία επικοινωνίας με την βάση δεδομένων μας.</h2>
+      <% } %>
+      <div class="container d-flex justify-content-center mt-200">
+        <form class="" action="/review_deliver" method="POST">
+          <div class="d-none">
+            <input type="text" name="order_id" value="<%= response.order_id %>">
+            <input type="text" name="deliver_id" value="<%= response.deliver_id %>">
+            <input type="text" name="user_id" value="<%= response.user_id %>">
+            <input type="text" name="user_role" value="<%= response.user_role %>">
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="stars">
+                      <input class="star star-5" id="star-5" type="radio" name="star" value="five"/> <label class="star star-5" for="star-5"></label>
+                      <input class="star star-4" id="star-4" type="radio" name="star" value="four" /> <label class="star star-4" for="star-4"></label>
+                      <input class="star star-3" id="star-3" type="radio" name="star" value="three" /> <label class="star star-3" for="star-3"></label> 
+                      <input class="star star-2" id="star-2" type="radio" name="star"  value="two" /> <label class="star star-2" for="star-2"></label> 
+                      <input class="star star-1" id="star-1" type="radio" name="star" value="one" /> <label class="star star-1" for="star-1"></label>
                   </div>
-                </div>
-                <!--Grid column-->
-
-                <!--Grid column-->
-                <div class="col-auto">
-                  <!-- Submit button -->
-                  <button type="submit" class="btn btn-outline-light mb-4">
-                    Εγγραφή
-                  </button>
-                </div>
-                <!--Grid column-->
               </div>
-              <!--Grid row-->
-            </form>
-          </section>
-          <!-- Section: Form -->
-
-          <!-- Section: Text -->
-          <section class="mb-4">
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
-              repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
-              eum harum corrupti dicta, aliquam sequi voluptate quas.
-            </p>
-          </section>
-          <!-- Section: Text -->
-
-          <!-- Section: Links -->
-          <section class="">
-            <!--Grid row-->
-            <div class="row">
-              <!--Grid column-->
-              <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5 class="text-uppercase">Links</h5>
-
-                <ul class="list-unstyled mb-0">
-                  <li>
-                    <a href="#!" class="text-white">Link 1</a>
-                  </li>
-                </ul>
+          </div>
+          <div class="row">
+              <div class="col-12">
+                  <label for="review_title">Τίτλος</label>
+                  <input class="form-control" id="review_title" name="review_title" required></textarea>
               </div>
-              <!--Grid column-->
-
-              <!--Grid column-->
-              <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5 class="text-uppercase">Links</h5>
-
-                <ul class="list-unstyled mb-0">
-                  <li>
-                    <a href="#!" class="text-white">Link 1</a>
-                  </li>
-                </ul>
+          </div>
+          <div class="row">
+              <div class="col-12">
+                  <label for="review_comment">Σχόλια</label>
+                  <textarea class="form-control" id="review_comment" name="review_comment"></textarea>
               </div>
-              <!--Grid column-->
-
-              <!--Grid column-->
-              <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5 class="text-uppercase">Links</h5>
-
-                <ul class="list-unstyled mb-0">
-                  <li>
-                    <a href="#!" class="text-white">Link 1</a>
-                  </li>
-                </ul>
+          </div>
+          <div class="row">
+            <div class="col-12 p-3 text-center">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="review_suggested" id="review_suggested_yes" value="yes" checked>
+                <label class="form-check-label" for="review_suggested">
+                  Ναι
+                </label>
               </div>
-              <!--Grid column-->
-
-              <!--Grid column-->
-              <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5 class="text-uppercase">Links</h5>
-
-                <ul class="list-unstyled mb-0">
-                  <li>
-                    <a href="#!" class="text-white">Link 1</a>
-                  </li>
-                </ul>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="review_suggested" id="review_suggested_no" value="no">
+                <label class="form-check-label" for="review_suggested">
+                  Όχι
+                </label>
               </div>
-              <!--Grid column-->
             </div>
-            <!--Grid row-->
-          </section>
-          <!-- Section: Links -->
-        </div>
-        <!-- Grid container -->
-
-        <!-- Copyright -->
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-          © 2020 Copyright:
-          <a class="text-white" href="/home">elsa.com</a>
-        </div>
-        <!-- Copyright -->
-      </footer>
-      <!-- Footer -->
-    </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <button class="btn btn-primary" type="submit">Υποβολή</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
     <script>
       const searchbox = document.getElementById('searchbox')
       const searchform = document.getElementById('searchform')
