@@ -49,6 +49,7 @@ var sql = require('mssql');
 const { create } = require('domain');
 const { response } = require('express');
 const { get } = require('jquery');
+// const { RESERVED_EVENTS } = require('socket.io/dist/socket');
 
 var sqlConfig = {
     user: 'elsa',
@@ -59,8 +60,88 @@ var sqlConfig = {
 };
 
 // end of database stuff
-
+// chat stuff
+const httpServer = require("http").createServer();
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "http://localhost:8080",
+  },
+});
+//
 app.get('/', checkAuthenticated, (req, res) => {
+
+    try {
+        (async function () {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            let result_total_sent = await pool.request()
+                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [sender_id] = '${req.user.id}';`)
+            result_total_sent = result_total_sent.recordset
+
+            let result_total_received = await pool.request()
+                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [receiver_id] = '${req.user.id}';`)
+                result_total_received = result_total_received.recordset
+
+            let result_total_delivered = await pool.request()
+                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [deliver_id] = '${req.user.id}';`)
+                result_total_delivered = result_total_delivered.recordset
+
+            let result_total_reviews = await pool.request()
+                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [sender_id] = '${req.user.id}';`)
+            result_total_reviews = result_total_reviews.recordset
+
+            let result_current_deliver  = await pool.request()
+                .query(`SELECT COUNT(*)
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED', 'CREATED', 'READY TO DISPATCH');`)
+            
+            let result_current_receiver = await pool.request()
+                .query(`SELECT COUNT(*)
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'DELIVERED');`)
+
+            let result_current_sender = await pool.request()
+                .query(`SELECT COUNT(*)
+                FROM [Elsa].[dbo].[Orders] o
+                INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+                INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+                WHERE [sender_id] = '${req.user.id}' AND [current_status] IN ('CREATED', 'READY TO DISPATCH');`)
+
+            let result_current_reviews = await pool.request()
+                .query(`((select count(*) from orders
+                where current_status = 'DELIVERED' and sender_id = '1' 
+                and id not in (select order_id from reviews where user_id = '1'))
+                
+                union 
+                
+                (select count(*) from orders
+                where current_status = 'DELIVERED' and receiver_id = '1' 
+                and id not in (select order_id from reviews where user_id = '1')))`)
+
+            console.log(result_current_reviews)
+
+            res.render('index.ejs', {
+                result_total_sent,
+                result_total_received,
+                result_total_delivered,
+                result_total_reviews,
+                result_current_deliver,
+                result_current_receiver,
+                result_current_sender,
+                result_current_reviews
+            })
+        })()
+      } catch {
+        console.log('FAILURE')
+        res.render('index.ejs', {
+
+        })
+      }
+
     console.log('rendering index.ejs')
     res.render('index.ejs', { name: req.user.name });
 })
@@ -215,12 +296,12 @@ app.post('/availability',checkAuthenticated, (req, res) => {
                 console.log(current_date < newEnd)
                 if (newStart < ((new Date(db_response[i].end_time)).toISOString()) && newStart > ((new Date(db_response[i].start_time)).toISOString())) {
                     post_req_db_response = 'Αποτυχία. Η ημ/νία έναρξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
-                    console.log(response)
+                    console.log(post_req_db_response)
                     res.render('availability.ejs', { post_req_db_response:post_req_db_response, post_req_db_conn_status:'1', db_response:db_response, db_conn_status:'1'})
                     return
                 } else if (newStart < ((new Date(db_response[i].start_time)).toISOString()) && newEnd > ((new Date(db_response[i].end_time)).toISOString())) {
                     post_req_db_response = 'Αποτυχία. Η ημ/νία λήξης δεν συμβαδίζει με τις ήδη καταχωρημένες ημ/νίες.'
-                    console.log(response)
+                    console.log(resppost_req_db_responseonse)
                     res.render('availability.ejs', { post_req_db_response:post_req_db_response, post_req_db_conn_status:'1', db_response:db_response, db_conn_status:'1'})
                     return
                 }
@@ -281,12 +362,14 @@ app.post('/delete_availability', (req, res) => {
 
 
             console.log('done inserting availability')
-            res.render('availability.ejs', { post_req_db_response:'', post_req_db_conn_status:'1', db_response:[], db_conn_status:'1'})
+            res.redirect('/availability')
+            // res.render('availability.ejs', { post_req_db_response:'', post_req_db_conn_status:'1', db_response:[], db_conn_status:'1'})
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
             console.log('rendering getjob.ejs')
-            res.render('availability.ejs', { post_req_db_response: 'Αποτυχία επικοινωνίας με την βάση δεδομένων μας.', post_req_db_conn_status: '0' , db_response:[], db_conn_status:'0'})
+            res.redirect('/availability')
+            // res.render('availability.ejs', { post_req_db_response: 'Αποτυχία επικοινωνίας με την βάση δεδομένων μας.', post_req_db_conn_status: '0' , db_response:[], db_conn_status:'0'})
         }
     })();
 })
@@ -419,7 +502,7 @@ app.get('/manage_deliver', checkAuthenticated, (req, res) => {
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED');`)
+                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED', 'CREATED', 'READY TO DISPATCH');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -516,7 +599,7 @@ app.get('/manage_receiver', checkAuthenticated, (req, res) => {
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED');`)
+                WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'DELIVERED');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -614,7 +697,7 @@ app.get('/manage_sender', checkAuthenticated, (req, res) => {
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [sender_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'PICKUP', 'ASSIGNED', 'ON TRANSIT', 'DELIVERED','READY TO DISPATCH ');`)
+                WHERE [sender_id] = '${req.user.id}' AND [current_status] IN ('CREATED', 'READY TO DISPATCH');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -680,13 +763,13 @@ app.post('/set_sender', checkAuthenticated, (req, res) => {
             //     console.log(response)
 
             //     console.log('rendering manage_sender.ejs')
-                res.redirect('manage_sender.ejs')
+                res.redirect('/manage_sender')
             // }
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
             console.log('rendering manage_sender.ejs')
-            res.redirect('manage_sender.ejs')
+            res.redirect('/manage_sender')
         }
     })();
     res.redirect('/manage_sender')
@@ -732,67 +815,57 @@ app.get('/tracking/:id', (req, res) => {
     })();
 })
 
-app.get('/rate_deliver/:id&:role', checkAuthenticated, (req, res) => {
-
-    res.render('rate_deliver.ejs',
-    {
-        response: { order_id: 'order_id', deliver_id: 'deliver_id', user_id: 'user_id', user_role: 'user_role' }, 
-        db_response: 'db_response',
-        db_conn_status:'1'
-    })
-
-    console.log('GET /rate_deliver/:' + req.params.id + '&:' + req.params.role + ', from user id: ' + req.user.id + '.')
-
-    let order_id = req.params.id
-    let user_role = req.params.role
-
+app.get('/reviews', (req, res) => {
+    console.log('rendering reviews.ejs')
     let db_response = '';
+    let db_response2 = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`select * from orders
+                where current_status = 'DELIVERED' and sender_id = '${req.user.id}' 
+                and id not in (select order_id from reviews where user_id = '${req.user.id}')
+                
+                union all
+                
+                (select * from orders
+                where current_status = 'DELIVERED' and receiver_id = '${req.user.id}' 
+                and id not in (select order_id from reviews where user_id = '${req.user.id}'))`)
 
-    if (role = 'sender') {
-        (async function () {
-            try {
-                console.log("sql connecting...")
-                let pool = await sql.connect(sqlConfig)
-                db_response = await pool.request()
-                    .query(`SELECT [id], [order_id], [deliver_id], [reviewer_id], [user_role] , [time_submitted], [stars], [title], [comment], 
-                    [suggested]
-                    FROM [Elsa].[dbo].[Reviews] WHERE [order_id] = '${order_id}'
-                     AND [reviewer_id] = '${req.user.id}' AND [user_role] = '${user_role}';`)
-    
-                db_response = db_response.recordset
-    
-                if (db_response.length == 0) {
-                    console.log('Δεν έχει ήδη υποβληθεί κριτική για αυτή την παραγγελία.')
+            db_response = db_response.recordset
 
-                    res.render('rate_deliver.ejs',
-                    {
-                        response: { order_id: order_id, deliver_id: deliver_id, user_id: user_id, user_role: user_role }, 
-                        db_response: db_response,
-                        db_conn_status:'1'
-                    })
-                } else {
-                    console.log('Έχει ήδη υποβληθεί κριτική για αυτή την παραγγελία.')
-    
-                    console.log('rendering tracking.ejs')
-                    res.render('rate_deliver.ejs',
-                    {
-                        response: { order_id: order_id, deliver_id: deliver_id, user_id: user_id, user_role: user_role }, 
-                        db_response: db_response,
-                        db_conn_status:'1'
-                    })                }
-            } catch (err) {
-                console.log(err);
-                console.log('FAILURE')
-                console.log('rendering rate_deliver.ejs')
-                res.render('rate_deliver.ejs',
-                {
-                    response: { order_id: order_id, deliver_id: deliver_id, user_id: user_id, user_role: user_role }, 
-                    db_response: db_response,
-                    db_conn_status:'1'
-                })
-            }
-        })();
-    }
+            db_response2 = await pool.request()
+            .query(`select * from reviews
+            where user_id = '${req.user.id}';`)
+            db_response2 = db_response2.recordset
+
+            res.render('reviews.ejs', {
+                db_response2: db_response2,
+                db_response: db_response,
+                db_conn_status: '1'
+            })
+
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering reviews.ejs')
+            res.render('reviews.ejs', {
+                db_response: [],
+                db_conn_status: '0'
+            })
+        }
+    })();
+})
+
+
+app.get('/review_deliver/:order_id', (req, res) => {
+    console.log('rendering reviews.ejs')
+    res.render('rate_deliver.ejs', {
+        user_id: req.user.id,
+        order_id: req.params.order_id,
+    })    
 })
 
 app.post('/review_deliver', (req, res) => {
@@ -801,9 +874,7 @@ app.post('/review_deliver', (req, res) => {
     let review_id = uuidv4()
 
     let order_id = req.body.order_id
-    let deliver_id = req.body.deliver_id
-    let user_id = req.body.user_id
-    let user_role = req.body.user_role
+    let user_id = req.user.id
 
     let star = req.body.star
     let review_title = req.body.review_title
@@ -820,21 +891,75 @@ app.post('/review_deliver', (req, res) => {
             let pool = await sql.connect(sqlConfig)
             db_response = await pool.request()
                 .query(`INSERT INTO [Elsa].[dbo].[Reviews] 
-                VALUES ('${review_id}', GETDATE(), '${order_id}', '${user_id}' 
-                ${user_role}', '${deliver_id}' '${star}', '${review_title}', 
+                VALUES ('${review_id}', GETDATE(), '${order_id}', '${user_id}',
+                '-', '-', '${star}', '${review_title}', 
                 '${review_comment}', '${review_suggested}');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
             console.log(db_response)
+
+            res.render('review_completed.ejs',
+            {
+                db_conn_status:'1'
+            })
             
         } catch (err) {
             console.log(err);
             console.log('FAILURE')
             console.log('rendering rate_deliver.ejs')
-            res.render('rate_deliver.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+            res.render('rate_deliver.ejs',
+            {
+                db_conn_status:'0'
+            })
         }
     })();
+})
+
+app.get('/tracking/:id', (req, res) => {
+    console.log(`/tracking/${req.params.id}`)
+    let response = ''
+    let db_response = '';
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT [id], [status], [datetime], [comment], (SELECT TOP 1 [name] FROM [Elsa].[dbo].[Orders] WHERE [id]='${req.params.id}') AS name
+                FROM [Elsa].[dbo].[Tracking] WHERE [id] = '${req.params.id}';`)
+            
+            console.log('sql results: ')
+            db_response = db_response.recordset
+            console.log(db_response)
+            console.log('done printing results')
+
+            if (db_response.length == 0) {
+                console.log(response)
+                response = 'Δεν υπάρχουν δεδομένα προς εμφάνιση.'
+                db_response = []
+
+                console.log('rendering tracking.ejs')
+                res.render('tracking.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            } else {
+                response = 'Υπάρχουν δεδομένα προς εμφάνιση.'
+                console.log(response)
+
+                console.log('rendering tracking.ejs')
+                res.render('tracking.ejs', { response: response, db_response: db_response, db_conn_status:'1' })
+            }
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            console.log('rendering tracking.ejs')
+            res.render('tracking.ejs', { response: 'Αποτυχία', db_response:[], db_conn_status:'0' })
+        }
+    })();
+})
+
+
+app.get('/chat', (req, res) => {
+    console.log('rendering chat.ejs')
+    res.render('chat.ejs')
 })
 
 app.get('/home', (req, res) => {

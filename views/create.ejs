@@ -59,23 +59,39 @@
     <header class="p-3 mb-3 border-bottom">
       <div class="container">
         <div id="navbar" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <a class="navbar-brand text-primary" href="#">ELSA</a>
+            <li><a href="/" class="nav-link px-2 link-secondary">Αρχική</a></li>
+            <li><a href="/reviews" class="nav-link px-2 link-dark">Αξιολογήσεις</a></li>
+            <li><a href="/chat" class="nav-link px-2 link-dark">Μηνύματα</a></li>
+            <li><a href="/history" class="nav-link px-2 link-dark">Ιστορικό</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link px-2 link-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">  Αποστολέας  </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/create"> Δημιουργία </a></li>
+                <li><a class="dropdown-item" href="/manage_sender"> Αποστολές </a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link px-2 link-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">  Μεταφορέας  </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/job"> Αναλαβή </a></li>
+                <li><a class="dropdown-item" href="/manage_deliver"> Μεταφορές </a></li>
+                <li><a class="dropdown-item" href="/availability"> Διαθεσιμότητα </a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link px-2 link-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">  Παραλήπτης  </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/manage_receiver"> Παραλαβές </a></li>
+              </ul>
+            </li>
+          </ul>
+          
   
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-              <li><img id="navbar_logo" class="mb-4" src="/views/resources/logo.svg" alt="" width="40" height="32"></li>
-              <li><a href="/" class="nav-link px-2 link-dark">Αρχική</a></li>
-              <li><a href="/create" class="nav-link px-2 link-secondary">Δημιουργία</a></li>
-              <li><a href="/manage_sender" class="nav-link px-2 link-dark">Αποστολές</a></li>
-              <li><a href="/manage_deliver" class="nav-link px-2 link-dark">Μεταφορά</a></li>
-              <li><a href="/manage_receiver" class="nav-link px-2 link-dark">Παραλαβές</a></li>
-              <li><a href="/availability" class="nav-link px-2 link-dark">Διαθεσιμότητα</a></li>
-              <li><a href="/job" class="nav-link px-2 link-dark">Αναλαβή</a></li>
-              <li><a href="/history" class="nav-link px-2 link-dark">Ιστορικό</a></li>
-                <!-- <li><a href="#" class="nav-link px-2 link-dark">Products</a></li> -->
-            </ul>
-  
-            <form action="/tracking/" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" id="searchform">
-              <input type="search" class="form-control" placeholder="Παρακολούθηση..." aria-label="Search" id="searchbox">
-            </form>
+          <form action="/tracking/" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" id="searchform">
+            <input type="search" class="form-control" placeholder="Παρακολούθηση..." aria-label="Search" id="searchbox">
+          </form>
   
           <div class="dropdown text-end">
             <a href="https://getbootstrap.com/docs/5.0/examples/headers/#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -89,7 +105,7 @@
                 <form action="/logout?_method=DELETE" method="POST">
                   <button class="dropdown-item" type="submit">Αποσύνδεση</button>
                 </form>
-              </li>
+              </li> 
             </ul>
           </div>
         </div>
@@ -159,156 +175,6 @@
         </div>
       </form>
     </main>
-    <footer class="bg-dark text-center text-white mb-0 mt-5">
-      <!-- Grid container -->
-      <div class="container p-4">
-        <!-- Section: Social media -->
-        <section class="mb-4">
-          <!-- Facebook -->
-          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-            ><i class="fa fa-facebook-square" aria-hidden="true"></i>
-          </a>
-
-          <!-- Twitter -->
-          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-            ><i class="fa fa-twitter"></i
-          ></a>
-
-          <!-- Google -->
-          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-            ><i class="fa fa-google"></i
-          ></a>
-
-          <!-- Instagram -->
-          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-            ><i class="fa fa-instagram"></i
-          ></a>
-
-          <!-- Linkedin -->
-          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-            ><i class="fa fa-linkedin"></i
-          ></a>
-
-          <!-- Github -->
-          <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-            ><i class="fa fa-github"></i
-          ></a>
-        </section>
-        <!-- Section: Social media -->
-
-        <!-- Section: Form -->
-        <section class="">
-          <form action="">
-            <!--Grid row-->
-            <div class="row d-flex justify-content-center">
-              <!--Grid column-->
-              <div class="col-auto">
-                <p class="pt-2">
-                  <strong>Εγγραφείτε για ενημερωτικά email</strong>
-                </p>
-              </div>
-              <!--Grid column-->
-
-              <!--Grid column-->
-              <div class="col-md-5 col-12">
-                <!-- Email input -->
-                <div class="form-outline form-white mb-4">
-                  <input type="email" id="form5Example2" class="form-control" />
-                  <label class="form-label" for="form5Example2">Διεύθυνση email</label>
-                </div>
-              </div>
-              <!--Grid column-->
-
-              <!--Grid column-->
-              <div class="col-auto">
-                <!-- Submit button -->
-                <button type="submit" class="btn btn-outline-light mb-4">
-                  Εγγραφή
-                </button>
-              </div>
-              <!--Grid column-->
-            </div>
-            <!--Grid row-->
-          </form>
-        </section>
-        <!-- Section: Form -->
-
-        <!-- Section: Text -->
-        <section class="mb-4">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
-            repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
-            eum harum corrupti dicta, aliquam sequi voluptate quas.
-          </p>
-        </section>
-        <!-- Section: Text -->
-
-        <!-- Section: Links -->
-        <section class="">
-          <!--Grid row-->
-          <div class="row">
-            <!--Grid column-->
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="text-uppercase">Links</h5>
-
-              <ul class="list-unstyled mb-0">
-                <li>
-                  <a href="#!" class="text-white">Link 1</a>
-                </li>
-              </ul>
-            </div>
-            <!--Grid column-->
-
-            <!--Grid column-->
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="text-uppercase">Links</h5>
-
-              <ul class="list-unstyled mb-0">
-                <li>
-                  <a href="#!" class="text-white">Link 1</a>
-                </li>
-              </ul>
-            </div>
-            <!--Grid column-->
-
-            <!--Grid column-->
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="text-uppercase">Links</h5>
-
-              <ul class="list-unstyled mb-0">
-                <li>
-                  <a href="#!" class="text-white">Link 1</a>
-                </li>
-              </ul>
-            </div>
-            <!--Grid column-->
-
-            <!--Grid column-->
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="text-uppercase">Links</h5>
-
-              <ul class="list-unstyled mb-0">
-                <li>
-                  <a href="#!" class="text-white">Link 1</a>
-                </li>
-              </ul>
-            </div>
-            <!--Grid column-->
-          </div>
-          <!--Grid row-->
-        </section>
-        <!-- Section: Links -->
-      </div>
-      <!-- Grid container -->
-
-      <!-- Copyright -->
-      <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-        © 2020 Copyright:
-        <a class="text-white" href="/home">elsa.com</a>
-      </div>
-      <!-- Copyright -->
-    </footer>
-    <!-- Footer -->
     <script>
       const searchbox = document.getElementById('searchbox')
       const searchform = document.getElementById('searchform')
