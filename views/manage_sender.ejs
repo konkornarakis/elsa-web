@@ -149,8 +149,13 @@
                       <form class="form" action="/set_sender" method="POST">
                         <input type="text" value="<%= db_response[i].id %>" name="id" class="invisible">
                         <select onchange="this.form.submit()" class="form-select" name="new_status" aria-label="Default select example">
+                          <% if (db_response[i].current_status == 'ASSIGNED') { %> 
+                          <option value="ASSIGNED" selected>ASSIGNED</option>
+                          <% } %>
                           <option value="CREATED" <% if (db_response[i].current_status == 'CREATED') {%> selected <% } %>>CREATED</option>
-                          <option value="READY TO DISPATCH" <% if (db_response[i].current_status == 'READY TO DISPATCH') {%> selected <% } %>>READY TO DISPATCH</option>
+                          <option value="READY TO DISPATCH" <% if (db_response[i].current_status == 'READY TO DISPATCH') {%>
+                             selected 
+                             <% } %>>READY TO DISPATCH</option>
                           <option value="PICKED UP" <% if (db_response[i].deliver_name == '-') {%> disabled <% } %>>PICKED UP</option>
                         </select>
                       </form>

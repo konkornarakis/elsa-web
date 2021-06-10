@@ -148,7 +148,11 @@
                     <td>
                         <form class="form" action="/set_deliver" method="POST">
                             <input type="text" value="<%= db_response[i].id %>" name="id" class="invisible">
-                            <select onchange="this.form.submit()" class="form-select" name="new_status" aria-label="Default select example">
+                            <select onchange="this.form.submit()" class="form-select" name="new_status"
+                             aria-label="Default select example" <% if (db_response[i].current_status == 'CREATED' || db_response[i].current_status == 'READY TO DISPATCH' ) { %> disabled <% } %> >
+                                <% if (db_response[i].current_status == 'CREATED' || db_response[i].current_status == 'READY TO DISPATCH' ) { %>
+                                <option value="" <% if (db_response[i].current_status == 'PICKED UP') {%> selected <% } %>>-</option>
+                                <% } %>
                                 <option value="PICKED UP" <% if (db_response[i].current_status == 'PICKED UP') {%> selected <% } %>>PICKED UP</option>
                                 <option value="ON TRANSIT" <% if (db_response[i].current_status == 'ON TRANSIT') {%> selected <% } %>>ON TRANSIT</option>
                                 <option value="OUT FOR DELIVERY" <% if (db_response[i].current_status == 'OUT FOR DELIVERY') {%> selected <% } %>>OUT FOR DELIVERY</option>

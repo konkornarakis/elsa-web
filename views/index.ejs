@@ -149,52 +149,52 @@
             <p>
               Συνολικές Αποστολές:
             </p>
-            <p>10<%= %></p>
+            <p><%= result_total_sent[0].count %></p>
           </div>
           <div class="card">
             <p>
               Συνολικές Μεταφορές:
             </p>
-            <p>20<%= %></p>
+            <p><%= result_total_delivered[0].count %></p>
           </div>
           <div class="card">
             <p>
               Συνολικές Παραλαβές:
             </p>
-            <p>30<%= %></p>
+            <p><%= result_total_received[0].count %></p>
           </div>
           <div class="card">
             <p>
-              Συνολικές Κριτικές:
+              Υποβληθείσες Αξιολογήσεις:
             </p>
-            <p>50<%= %></p>
+            <p><%= result_total_reviews[0].count %></p>
           </div>
         </div>
 
         <div class="container d-flex flex-row m-3">
           <div class="card">
             <p>
-              Αποστολές:
+              Αποστολές σε εξέλιξη:
             </p>
-            <p>10<%= %></p>
+            <p><%= result_current_sender[0].count %></p>
           </div>
           <div class="card">
             <p>
-              Μεταφορές:
+              Μεταφορές σε εξέλιξη:
             </p>
-            <p>20<%= %></p>
+            <p><%= result_current_deliver[0].count %></p>
           </div>
           <div class="card">
             <p>
-              Παραλαβές:
+              Παραλαβές σε εξέλιξη:
             </p>
-            <p>30<%= %></p>
+            <p><%= result_current_receiver[0].count %></p>
           </div>
           <div class="card">
             <p>
-              Κριτικές:
+              Παραγγελίες προς αξιολόγηση:
             </p>
-            <p>50<%= %></p>
+            <p>-<%= %></p>
           </div>
         </div>
       </main>

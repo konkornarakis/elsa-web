@@ -148,13 +148,12 @@
           
 
         <div class="container mt-5">
-          <h1>Ιστορικό αξιολογήσεων</h1>
+          <h1>Ιστορικό αξιολογήσεων που έχω υποβάλλει</h1>
           <% if(db_response2.length != 0) { %>
           <table class="table">
               <thead>
                   <tr>
                       <th scope="col">#</th>
-                      <th scope="col">Αναγνωριστικό παραγγελίας</th>
                       <th scope="col">Ημ/νία υποβολής</th>
                       <th scope="col">Αστέρια</th>
   
@@ -166,14 +165,49 @@
               <tbody> 
                   <% for (let i = 0; i < db_response2.length; i++) { %>
                   <tr>  
-                      <th scope="row"><%= i + 1 %></th>
-                      <td><%= db_response2[i].order_id %></td>
+                      <!-- <th scope="row"><%= i + 1 %></th> -->
+                      <th scope="row"><%= db_response2[i].order_id %></td>
                       <td><%= (new Date(db_response2[i].time_submitted)).toISOString().slice(0, 16) %></td>
                       <td><%= db_response2[i].star %></td>
                       
                       <td><%= db_response2[i].title %></td>
                       <td><%= db_response2[i].comment %></td>
                       <td><%= db_response2[i].suggested %></td>
+                  </tr>
+                  <% } %>
+              </tbody>
+          </table>
+          <% } else { %>
+            <h2>Δεν υπάρχουν δεδομένα προς εμφάνιση.</h2>
+          <% } %>
+        </div>
+
+        <div class="container mt-5">
+          <h1>Ιστορικό αξιολογήσεων για εμένα</h1>
+          <% if(db_response3.length != 0) { %>
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Ημ/νία υποβολής</th>
+                      <th scope="col">Αστέρια</th>
+  
+                      <th scope="col">Τίτλος</th>
+                      <th scope="col">Σχόλιο</th>
+                      <th scope="col">Προτείνεται</th>
+                  </tr>
+              </thead>
+              <tbody> 
+                  <% for (let i = 0; i < db_response3.length; i++) { %>
+                  <tr>  
+                      <!-- <th scope="row"><%= i + 1 %></th> -->
+                      <th scope="row"><%= db_response3[i].order_id %></td>
+                      <td><%= (new Date(db_response3[i].time_submitted)).toISOString().slice(0, 16) %></td>
+                      <td><%= db_response3[i].star %></td>
+                      
+                      <td><%= db_response3[i].title %></td>
+                      <td><%= db_response3[i].comment %></td>
+                      <td><%= db_response3[i].suggested %></td>
                   </tr>
                   <% } %>
               </tbody>

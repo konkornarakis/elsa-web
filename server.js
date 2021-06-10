@@ -22,9 +22,11 @@ initializePassport(
     id => users.find(user => user.id === id)
 );
 
-const users = [{ id: 1, name: 'Konstantinos', email: 'k@k', password: '0', availability: [] },
-{ id: 2, name: 'Alexandros', email: 'a@a', password: '1', availability: [] },
-{ id: 3, name: 'Rafael', email: 'r@r', password: '2', availability: [] }]
+const users = [
+    { id: 1, name: 'Konstantinos', email: 'k@k', password: '0', home_tel: '-', mobile_tel: '-', address: '-' },
+    { id: 2, name: 'Alexandros', email: 'a@a', password: '1', home_tel: '-', mobile_tel: '-', address: '-' },
+    { id: 3, name: 'Rafael', email: 'r@r', password: '2', home_tel: '-', mobile_tel: '-', address: '-' },
+]
 const orders = []
 const toDeliver = []
 const toReceive = []
@@ -69,7 +71,6 @@ const io = require("socket.io")(httpServer, {
 });
 //
 app.get('/', checkAuthenticated, (req, res) => {
-
     try {
         (async function () {
             console.log("sql connecting...")
@@ -77,78 +78,89 @@ app.get('/', checkAuthenticated, (req, res) => {
             let name = await pool.request()
                 .query(`SELECT name FROM [Elsa].[dbo].[Users] WHERE [id] = '${req.user.id}';`)
             name = name.recordset
+            name = name[0].name
 
             let result_total_sent = await pool.request()
-                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [sender_id] = '${req.user.id}';`)
+                .query(`SELECT COUNT(*) as count FROM [Elsa].[dbo].[Orders] WHERE [sender_id] = '${req.user.id}';`)
             result_total_sent = result_total_sent.recordset
 
             let result_total_received = await pool.request()
-                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [receiver_id] = '${req.user.id}';`)
+                .query(`SELECT COUNT(*) as count FROM [Elsa].[dbo].[Orders] WHERE [receiver_id] = '${req.user.id}';`)
                 result_total_received = result_total_received.recordset
 
             let result_total_delivered = await pool.request()
-                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [deliver_id] = '${req.user.id}';`)
+                .query(`SELECT COUNT(*) as count FROM [Elsa].[dbo].[Orders] WHERE [deliver_id] = '${req.user.id}';`)
                 result_total_delivered = result_total_delivered.recordset
 
             let result_total_reviews = await pool.request()
-                .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [sender_id] = '${req.user.id}';`)
+                .query(`SELECT COUNT(*) as count FROM [Elsa].[dbo].[Reviews] WHERE [user_id] = '${req.user.id}';`)
             result_total_reviews = result_total_reviews.recordset
 
             let result_current_deliver  = await pool.request()
-                .query(`SELECT COUNT(*)
+                .query(`SELECT COUNT(*) as count
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
                 WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED', 'CREATED', 'READY TO DISPATCH');`)
-            
+                result_current_deliver = result_current_deliver.recordset
+
             let result_current_receiver = await pool.request()
-                .query(`SELECT COUNT(*)
+                .query(`SELECT COUNT(*) as count
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
                 WHERE [receiver_id] = '${req.user.id}' AND [current_status] NOT IN ('CANCELED', 'DELIVERED');`)
+                result_current_receiver = result_current_receiver.recordset
 
             let result_current_sender = await pool.request()
-                .query(`SELECT COUNT(*)
+                .query(`SELECT COUNT(*) as count
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
                 WHERE [sender_id] = '${req.user.id}' AND [current_status] IN ('CREATED', 'READY TO DISPATCH');`)
+                result_current_sender = result_current_sender.recordset
 
             let result_current_reviews = await pool.request()
-                .query(`((select count(*) from orders
+                .query(`((select count(*) as count from orders
                 where current_status = 'DELIVERED' and sender_id = '1' 
                 and id not in (select order_id from reviews where user_id = '1'))
                 
                 union 
                 
-                (select count(*) from orders
+                (select count(*) as count from orders
                 where current_status = 'DELIVERED' and receiver_id = '1' 
                 and id not in (select order_id from reviews where user_id = '1')))`)
+                result_current_reviews = result_current_reviews.recordset
 
-            console.log(result_current_reviews)
+            console.log('result_total_sent')
+            console.log(result_total_sent[0].count)
 
             res.render('index.ejs', {
                 name:name,
-                result_total_sent,
-                result_total_received,
-                result_total_delivered,
-                result_total_reviews,
-                result_current_deliver,
-                result_current_receiver,
-                result_current_sender,
-                result_current_reviews
+                result_total_sent:result_total_sent,
+                result_total_received:result_total_received,
+                result_total_delivered:result_total_delivered,
+                result_total_reviews:result_total_reviews,
+                result_current_deliver:result_current_deliver,
+                result_current_receiver:result_current_receiver,
+                result_current_sender:result_current_sender,
+                result_current_reviews:result_current_reviews,
             })
         })()
       } catch {
         console.log('FAILURE')
         res.render('index.ejs', {
-
+            name:'',
+            result_total_sent: '',
+            result_total_received: '',
+            result_total_delivered: '',
+            result_total_reviews: '',
+            result_current_deliver: '',
+            result_current_receiver: '',
+            result_current_sender: '',
+            result_current_reviews: '',
         })
       }
-
-    console.log('rendering index.ejs')
-    res.render('index.ejs', { name: req.user.name });
 })
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
@@ -194,15 +206,32 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         })()
         console.log('redirecting to login.ejs')
         res.redirect('/login')
-    } catch {
+    } catch (e) {
+        console.log('failure while registering new user')
+        console.log(e)
         console.log('rendering register.ejs')
         res.redirect('/register')
     }
 })
 
 app.get('/create', checkAuthenticated, (req, res) => {
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            let result = await pool.request()
+                .query(`SELECT address FROM [Elsa].[dbo].[Users] WHERE id = '${req.user.id}';`)
+            result = result.recordset
+            result = result[0].address
+            console.log('sql results for address: ')
+            console.log(result)
+            res.render('create.ejs', { name: req.user.name, address: result, })
+        } catch (err) {
+            console.log(err);
+            res.render('create.ejs', { name: req.user.name, address: '-' })
+        }
+    })()
     console.log('rendering create.ejs')
-    res.render('create.ejs', { name: req.user.name })
 })
 
 
@@ -446,15 +475,24 @@ app.get('/getjob', checkAuthenticated, (req, res) => {
         try {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
+            // db_response = await pool.request()
+            //     .query(`SELECT TOP 1 o.[id] as id, o.[name] as name, o.[current_status] as current_status, o.[date_created] as date_created, u1.[name] as sender_name, o.[sender_address] as sender_address, u2.[name] as receiver_name, o.[receiver_address] as receiver_address
+            //     FROM [Elsa].[dbo].[Orders] o
+            //     INNER JOIN Availability A ON (o.[date_created] > a.[start_time] AND o.[date_created] < a.[end_time])
+            //     INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
+            //     INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
+            //     WHERE o.[current_status] = 'CREATED' AND
+            //     a.[user_id] = '${req.user.id}' AND o.[deliver_id] IS NULL AND o.[sender_id] != '${req.user.id}' AND o.[receiver_id] != '${req.user.id}';`)
+            
             db_response = await pool.request()
                 .query(`SELECT TOP 1 o.[id] as id, o.[name] as name, o.[current_status] as current_status, o.[date_created] as date_created, u1.[name] as sender_name, o.[sender_address] as sender_address, u2.[name] as receiver_name, o.[receiver_address] as receiver_address
                 FROM [Elsa].[dbo].[Orders] o
-                INNER JOIN Availability A ON (o.[date_created] > a.[start_time] AND o.[date_created] < a.[end_time])
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE o.[current_status] = 'CREATED' AND
-                a.[user_id] = '${req.user.id}' AND o.[deliver_id] IS NULL AND o.[sender_id] != '${req.user.id}' AND o.[receiver_id] != '${req.user.id}';`)
+                WHERE o.[current_status] = 'CREATED'
+                 AND o.[deliver_id] IS NULL AND o.[sender_id] != '${req.user.id}' AND o.[receiver_id] != '${req.user.id}';`)
             
+
             console.log('sql results: ')
             db_response = db_response.recordset
             console.log(db_response)
@@ -510,7 +548,7 @@ app.get('/manage_deliver', checkAuthenticated, (req, res) => {
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED', 'CREATED', 'READY TO DISPATCH');`)
+                WHERE [deliver_id] = '${req.user.id}' AND [current_status] NOT IN ('DELIVERED','CANCELED');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -705,7 +743,7 @@ app.get('/manage_sender', checkAuthenticated, (req, res) => {
                 FROM [Elsa].[dbo].[Orders] o
                 INNER JOIN [Elsa].[dbo].[Users] u1 ON o.[sender_id] = u1.[id]
                 INNER JOIN [Elsa].[dbo].[Users] u2 ON o.[receiver_id] = u2.[id]
-                WHERE [sender_id] = '${req.user.id}' AND [current_status] IN ('CREATED', 'READY TO DISPATCH');`)
+                WHERE [sender_id] = '${req.user.id}' AND [current_status] IN ('CREATED', 'READY TO DISPATCH', 'ASSIGNED');`)
             
             console.log('sql results: ')
             db_response = db_response.recordset
@@ -849,7 +887,15 @@ app.get('/reviews', (req, res) => {
             where user_id = '${req.user.id}';`)
             db_response2 = db_response2.recordset
 
+            db_response3 = await pool.request()
+            .query(`select * from reviews
+            where order_id in (select id from orders where deliver_id = '${req.user.id}');`)
+            db_response3 = db_response3.recordset
+            console.log('αξιολογήσεις για εμένα')
+            console.log(db_response3)
+
             res.render('reviews.ejs', {
+                db_response3: db_response3,
                 db_response2: db_response2,
                 db_response: db_response,
                 db_conn_status: '1'
@@ -860,6 +906,8 @@ app.get('/reviews', (req, res) => {
             console.log('FAILURE')
             console.log('rendering reviews.ejs')
             res.render('reviews.ejs', {
+                db_response3: [],
+                db_response2: [],
                 db_response: [],
                 db_conn_status: '0'
             })

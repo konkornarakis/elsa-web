@@ -99,7 +99,7 @@
             </a>
             <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
               <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Ρυθμίσεις</a></li>
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Προφίλ</a></li>
+              <li><a class="dropdown-item" href="/profile">Προφίλ</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/logout?_method=DELETE" method="POST">
@@ -131,8 +131,13 @@
         <div class="row">
           <div class="col mb-3">
             <label for="sendersAddress" class="form-label">Διεύθυνση παραλαβής</label>
-            <input type="text" name="sendersAddress" class="form-control" id="sendersAddress" aria-describedby="emailHelp">
+            <input type="text" list="address" name="sendersAddress" class="form-control" id="sendersAddress" aria-describedby="emailHelp">
             <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+            <datalist id="address">
+              <% if (address != '-') { %>
+              <option value="<%= address %>">
+              <% } %>
+            </datalist>
           </div>
           <div class="col mb-3">
               <label for="receiversAddress" class="form-label">Διεύθυνση αποστολής</label>
@@ -144,29 +149,29 @@
         <div class="row">
           <div class="col mb-2">
             <label for="parcelWidth" class="form-label">Πλάτος</label>
-            <input type="text" name="parcelWidth" class="form-control" id="parcelWidth">
+            <input type="text" name="parcelWidth" class="form-control" id="parcelWidth" required>
           </div>
           <div class="col mb-4">
             <label for="parcelHeight" class="form-label">Ύψος</label>
-            <input type="text" name="parcelHeight" class="form-control" id="parcelHeight">
+            <input type="text" name="parcelHeight" class="form-control" id="parcelHeight" required>
           </div>
           <div class="col mb-6">
             <label for="parcelLength" class="form-label">Μήκος</label>
-            <input type="text" name="parcelLength" class="form-control" id="parcelLength">
+            <input type="text" name="parcelLength" class="form-control" id="parcelLength" required>
           </div>
           <div class="col mb-8">
             <label for="parcelWeight" class="form-label">Βάρος</label>
-            <input type="text" name="parcelWeight" class="form-control" id="parcelWeight">
+            <input type="text" name="parcelWeight" class="form-control" id="parcelWeight" required>
           </div>
           <div class="col mb-10">
             <label for="parcelValue" class="form-label">Εκτιμώμενη αξία</label>
-            <input type="text" name="parcelValue" class="form-control" id="parcelValue">
+            <input type="text" name="parcelValue" class="form-control" id="parcelValue" required>
           </div>
         </div>
 
         <div class="row justify-content-center">
           <div class="col-2 mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
             <label class="form-check-label" for="exampleCheck1">Συμφωνώ με τους όρους χρήσης</label>
           </div>
         </div>
@@ -178,6 +183,24 @@
     <script>
       const searchbox = document.getElementById('searchbox')
       const searchform = document.getElementById('searchform')
+
+      const width = document.getElementById('parcelWidth')
+      const height = document.getElementById('parcelHeight')
+      const length = document.getElementById('parcelLength')
+      const weigth = document.getElementById('parcelWeight')
+      const value = document.getElementById('parcelValue')
+
+      width.onchange = function() {
+          console.log("validating if positive");
+          let w = width.value;
+          if (w < 0) width.setCustomValidity("Μη έγκυρη τιμή")
+      };
+      height.onchange = validatePositive;
+      length.onchange = validatePositive;
+      weigth.onchange = validatePositive;
+      value.onchange = validatePositive;
+      
+
       console.log(searchbox)
       searchbox.onkeypress = function() {
         console.log(searchbox.value)
