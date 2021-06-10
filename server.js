@@ -74,6 +74,10 @@ app.get('/', checkAuthenticated, (req, res) => {
         (async function () {
             console.log("sql connecting...")
             let pool = await sql.connect(sqlConfig)
+            let name = await pool.request()
+                .query(`SELECT name FROM [Elsa].[dbo].[Users] WHERE [id] = '${req.user.id}';`)
+            name = name.recordset
+
             let result_total_sent = await pool.request()
                 .query(`SELECT COUNT(*) FROM [Elsa].[dbo].[Orders] WHERE [sender_id] = '${req.user.id}';`)
             result_total_sent = result_total_sent.recordset
@@ -125,6 +129,7 @@ app.get('/', checkAuthenticated, (req, res) => {
             console.log(result_current_reviews)
 
             res.render('index.ejs', {
+                name:name,
                 result_total_sent,
                 result_total_received,
                 result_total_delivered,
@@ -169,7 +174,10 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         id: Date.now().toString(),
         name: req.body.name,
         email: req.body.email,
-        password: hashedPassword
+        password: hashedPassword,
+        home_tel: '-',
+        mobile_tel: '-',
+        address: '-',
       })
 
         (async function () {
@@ -177,7 +185,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
                 console.log("sql connecting...")
                 let pool = await sql.connect(sqlConfig)
                 let result = await pool.request()
-                    .query(`INSERT INTO [Elsa].[dbo].[Users] VALUES ('${uuidv4()}', '${req.body.name}', '${req.body.email}', '${req.body.hashedPassword}');`)
+                    .query(`INSERT INTO [Elsa].[dbo].[Users] VALUES ('${uuidv4()}', '${req.body.name}', '${req.body.email}', '${req.body.hashedPassword}', '-', '-', '-');`)
                 console.log('sql results: ')
                 console.log(result)
             } catch (err) {
@@ -859,7 +867,6 @@ app.get('/reviews', (req, res) => {
     })();
 })
 
-
 app.get('/review_deliver/:order_id', (req, res) => {
     console.log('rendering reviews.ejs')
     res.render('rate_deliver.ejs', {
@@ -956,6 +963,82 @@ app.get('/tracking/:id', (req, res) => {
     })();
 })
 
+app.get('/profile', (req, res) => {
+
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT *
+                FROM [Elsa].[dbo].[Users] WHERE [id] = '${req.user.id}';`)
+            db_response = db_response.recordset
+            console.log(db_response)
+            res.render('profile.ejs', {
+                db_response: db_response,
+                db_conn_status: '1',
+            })
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            res.render('profile.ejs', {
+                db_response: [],
+                db_conn_status: '0',
+            })
+        }
+    })();
+})
+
+app.get('/manage_profile', (req, res) => {
+
+    (async function () {
+        try {
+            console.log("sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`SELECT *
+                FROM [Elsa].[dbo].[Users] WHERE [id] = '${req.user.id}';`)
+            db_response = db_response.recordset
+            console.log(db_response)
+            res.render('manage_profile.ejs', {
+                db_response: db_response,
+                db_conn_status: '1',
+            })
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            res.render('manage_profile.ejs', {
+                db_response: [],
+                db_conn_status: '0',
+            })
+        }
+    })();
+})
+
+app.post('/save_profile', (req, res) => {
+
+    console.log('post /save_profile');
+
+    (async function () {
+        try {
+            console.log("/save_profile sql connecting...")
+            let pool = await sql.connect(sqlConfig)
+            db_response = await pool.request()
+                .query(`UPDATE [Elsa].[dbo].[Users] 
+                SET home_tel = '${req.body.home_tel}', mobile_tel = '${req.body.mobile_tel}', address = '${req.body.address}'
+                WHERE [id] = '${req.user.id}';`)
+            db_response = db_response.recordset
+            console.log(db_response)
+            res.redirect('/profile')
+        } catch (err) {
+            console.log(err);
+            console.log('FAILURE')
+            res.redirect('/profile')
+        }
+    })();
+
+    res.redirect('/profile')
+})
 
 app.get('/chat', (req, res) => {
     console.log('rendering chat.ejs')

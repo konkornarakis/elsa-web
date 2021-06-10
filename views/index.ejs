@@ -63,8 +63,15 @@
 
         display: flex;
         flex-direction: row;
+        justify-content: center;
+        align-items: center;
         flex-wrap: wrap;
 
+      }
+
+      .card * {
+        font-size: large;
+        margin: 10px
       }
 
       @media all and (min-width: 992px) {
@@ -119,8 +126,8 @@
               <img src="/views/resources/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
             </a>
             <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Ρυθμίσεις</a></li>
-              <li><a class="dropdown-item" href="https://getbootstrap.com/docs/5.0/examples/headers/#">Προφίλ</a></li>
+              <li><a class="dropdown-item" href="#">Ρυθμίσεις</a></li>
+              <li><a class="dropdown-item" href="/profile">Προφίλ</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/logout?_method=DELETE" method="POST">
@@ -140,27 +147,54 @@
         <div class="container d-flex flex-row m-3">
           <div class="card">
             <p>
+              Συνολικές Αποστολές:
+            </p>
+            <p>10<%= %></p>
+          </div>
+          <div class="card">
+            <p>
+              Συνολικές Μεταφορές:
+            </p>
+            <p>20<%= %></p>
+          </div>
+          <div class="card">
+            <p>
+              Συνολικές Παραλαβές:
+            </p>
+            <p>30<%= %></p>
+          </div>
+          <div class="card">
+            <p>
+              Συνολικές Κριτικές:
+            </p>
+            <p>50<%= %></p>
+          </div>
+        </div>
+
+        <div class="container d-flex flex-row m-3">
+          <div class="card">
+            <p>
               Αποστολές:
             </p>
-            <span>10<%= %></span>
+            <p>10<%= %></p>
           </div>
           <div class="card">
             <p>
               Μεταφορές:
             </p>
-            <span>20<%= %></span>
+            <p>20<%= %></p>
           </div>
           <div class="card">
             <p>
               Παραλαβές:
             </p>
-            <span>30<%= %></span>
+            <p>30<%= %></p>
           </div>
           <div class="card">
             <p>
               Κριτικές:
             </p>
-            <span>50<%= %></span>
+            <p>50<%= %></p>
           </div>
         </div>
       </main>
