@@ -22,11 +22,11 @@ initializePassport(
     id => users.find(user => user.id === id)
 );
 
-const users = [
-    { id: 1, name: 'Konstantinos', email: 'k@k', password: '0', home_tel: '-', mobile_tel: '-', address: '-' },
+let users = [
+    { id: 1, name: 'Kostas', email: 'k@k', password: '0', home_tel: '-', mobile_tel: '-', address: '-' },
     { id: 2, name: 'Alexandros', email: 'a@a', password: '1', home_tel: '-', mobile_tel: '-', address: '-' },
     { id: 3, name: 'Rafael', email: 'r@r', password: '2', home_tel: '-', mobile_tel: '-', address: '-' },
-]
+];
 const orders = []
 const toDeliver = []
 const toReceive = []
@@ -181,23 +181,24 @@ app.get('/register', checkNotAuthenticated, (req, res) => {
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10)
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      let new_id = uuidv4();
       users.push({
-        id: Date.now().toString(),
+        id: new_id,
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword,
         home_tel: '-',
         mobile_tel: '-',
         address: '-',
-      })
+      });
 
         (async function () {
             try {
                 console.log("sql connecting...")
                 let pool = await sql.connect(sqlConfig)
                 let result = await pool.request()
-                    .query(`INSERT INTO [Elsa].[dbo].[Users] VALUES ('${uuidv4()}', '${req.body.name}', '${req.body.email}', '${req.body.hashedPassword}', '-', '-', '-');`)
+                    .query(`INSERT INTO [Elsa].[dbo].[Users] VALUES ('${new_id}', '${req.body.name}', '${req.body.email}', '${req.body.hashedPassword}', '-', '-', '-');`)
                 console.log('sql results: ')
                 console.log(result)
             } catch (err) {
